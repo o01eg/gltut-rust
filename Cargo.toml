@@ -1,0 +1,24 @@
+[package]
+
+name = "gltut-rust"
+version = "0.0.1"
+authors = ["O01eg <o01eg@yandex.ru>"]
+license = "MIT"
+readme = "README.md"
+
+[dependencies]
+sdl2 = "*"
+gl = "*"
+
+[lib]
+name = "tutcommon"
+path = "src/libtutcommon/lib.rs"
+
+[[bin]]
+name = "tut01"
+path = "src/tut01/main.rs"
+
+[[bin]]
+name = "tut02"
+path = "src/tut02/main.rs"
+
