@@ -12,6 +12,8 @@ extern crate sdl2;
 // Include OpenGL library.
 extern crate gl;
 
+extern crate tutcommon;
+
 #[doc = "Module for GL drawing stuff."]
 pub mod glscene;
 
@@ -27,7 +29,7 @@ fn main() {
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask
         , sdl2::video::GLProfile::GLCoreProfile as i32); // Don't use old OpenGL
 
-    let window = sdl2::video::Window::new("Tutorial 01", sdl2::video::WindowPos::PosCentered
+    let window = sdl2::video::Window::new("Tutorial 02", sdl2::video::WindowPos::PosCentered
         , sdl2::video::WindowPos::PosCentered, 1024, 768, sdl2::video::OPENGL).unwrap();
 
     let gl_context = window.gl_create_context().unwrap();
@@ -36,11 +38,19 @@ fn main() {
         std::mem::transmute(sdl2::video::gl_get_proc_address(s))
     });
 
+    unsafe {
+        gl::ClearColor(0.0, 0.0, 0.4, 0.0);
+    }
+
     // init scene.
     let scene = glscene::GLScene::new();
 
     let mut event_pump = sdl_context.event_pump();
     'evloop : loop {
+        unsafe {
+            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+        }
+        
         scene.draw();
 
         // Swap buffers.
