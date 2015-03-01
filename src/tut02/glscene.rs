@@ -33,6 +33,10 @@ impl GLScene {
             gl::BindVertexArray(vertex_array_id);
         }
 
+        // Create and compile our GLSL program from the shaders
+        let program_id = GLScene::load_program("data/tut02/SimpleVertexShader.vertexshader"
+            , "data/tut02/SimpleFragmentShader.fragmentshader");
+
         let mut vertex_buffer_id = 0;
 
         unsafe {
@@ -48,9 +52,6 @@ impl GLScene {
                 , std::mem::transmute(&G_VERTEX_BUFFER_DATA)
                 , gl::STATIC_DRAW);
         }
-
-        let program_id = GLScene::load_program("data/tut02/SimpleVertexShader.vertexshader"
-            , "data/tut02/SimpleFragmentShader.fragmentshader");
         
         GLScene { vertex_array_id : vertex_array_id
             , vertex_buffer_id : vertex_buffer_id
