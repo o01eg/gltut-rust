@@ -1,5 +1,4 @@
 use std;
-use std::path::AsPath;
 
 use gl;
 use gl::types::{GLchar, GLfloat, GLint, GLuint};
@@ -41,12 +40,10 @@ impl GLScene {
         let program_id = GLScene::load_program("data/tut03/SimpleTransform.vertexshader"
             , "data/tut03/SingleColor.fragmentshader");
 
-        let mut matrix_id = 0;
-
-        unsafe {
+        let matrix_id = unsafe {
             // Get a handle for our "MVP" uniform 
-            matrix_id = gl::GetUniformLocation(program_id, "MVP".as_ptr() as * const i8);
-        }
+            gl::GetUniformLocation(program_id, "MVP".as_ptr() as * const i8)
+        };
 
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
         let projection : tutcommon::Matrix4f = tutcommon::Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
@@ -122,7 +119,7 @@ impl GLScene {
         }
     }
 
-    fn load_program<VP: AsPath + ?Sized, FP: AsPath + ?Sized>(vertex_file_path : &VP, fragment_file_path : &FP) -> GLuint {
+    fn load_program(vertex_file_path : &str, fragment_file_path : &str) -> GLuint {
         unsafe {
             // Create the shaders.
             let vertex_shader_id = gl::CreateShader(gl::VERTEX_SHADER);
@@ -135,12 +132,12 @@ impl GLScene {
             let fragment_shader_code = tutcommon::read_source_from_file(fragment_file_path);
 
             // Compile Vertex Shader
-            println!("Compiling shader: {}", vertex_file_path.as_path().to_string_lossy());
-            GLScene::compile_and_check_shader(vertex_shader_id, &vertex_shader_code[..]);
+            println!("Compiling shader: {}", vertex_file_path);
+            GLScene::compile_and_check_shader(vertex_shader_id, &vertex_shader_code);
 
             // Compile Fragment Shader
-            println!("Compiling shader: {}", fragment_file_path.as_path().to_string_lossy());
-            GLScene::compile_and_check_shader(fragment_shader_id, &fragment_shader_code[..]);
+            println!("Compiling shader: {}", fragment_file_path);
+            GLScene::compile_and_check_shader(fragment_shader_id, &fragment_shader_code);
 
             // Link the program
             let program_id = gl::CreateProgram();

@@ -3,8 +3,6 @@
 #![deny(non_snake_case)]
 #![deny(non_upper_case_globals)]
 
-#![feature(path)]
-
 #![crate_name = "tut03"]
 
 #![doc = "http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/"]
