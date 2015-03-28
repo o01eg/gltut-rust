@@ -3,7 +3,7 @@
 #![deny(non_snake_case)]
 #![deny(non_upper_case_globals)]
 
-#![feature(std_misc)]
+#![feature(convert, std_misc)]
 
 #![doc = "Common stuff for tutorials."]
 #![crate_name = "tutcommon"]
@@ -13,10 +13,10 @@ use std::fs::File;
 use std::io::Read;
 use std::num::Float;
 use std::ops::Mul;
-use std::path::AsPath;
+use std::path::Path;
 
 #[doc = "Read content of file into string."]
-pub fn read_source_from_file<P: AsPath>(path : P) -> String {
+pub fn read_source_from_file<P: AsRef<Path>>(path : P) -> String {
     let mut res = String::new();
     File::open(path).unwrap().read_to_string(&mut res).unwrap();
     return res;
