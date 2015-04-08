@@ -3,7 +3,7 @@
 #![deny(non_snake_case)]
 #![deny(non_upper_case_globals)]
 
-#![feature(convert, std_misc)]
+#![feature(std_misc)]
 
 #![doc = "Common stuff for tutorials."]
 #![crate_name = "tutcommon"]
@@ -11,7 +11,6 @@
 use std::default::Default;
 use std::fs::File;
 use std::io::Read;
-use std::num::Float;
 use std::ops::Mul;
 use std::path::Path;
 
