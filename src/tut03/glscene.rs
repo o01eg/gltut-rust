@@ -46,7 +46,9 @@ impl GLScene {
         };
 
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-        let projection : tutcommon::Matrix4f = tutcommon::Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
+        //let projection : tutcommon::Matrix4f = tutcommon::Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
+        
+        let projection : tutcommon::Matrix4f = tutcommon::Matrix4f::ortho(-10.0, 10.0, -10.0, 10.0, 0.0, 100.0);
 
         println!("Projection matrix: {:?}", projection);
         
@@ -60,7 +62,9 @@ impl GLScene {
         println!("View matrix: {:?}", view);
 
         // Model matrix : an identity matrix (model will be at the origin)
-        let model = std::default::Default::default();
+        let model = tutcommon::Matrix4f::rotate(45.0, tutcommon::Vector3f(10.0, 1.0, -2.0)); //std::default::Default::default();
+        
+        println!("Model matrix: {:?}", model);
 
         // Our ModelViewProjection : multiplication of our 3 matrices        
         let mvp = projection * view * model; // Remember, matrix multiplication is the other way around

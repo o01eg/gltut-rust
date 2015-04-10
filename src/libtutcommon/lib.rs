@@ -78,6 +78,20 @@ impl Matrix4f {
         res
     }
 
+    #[doc = "Get orthographic projection matrix."]
+    pub fn ortho(left: f32, right: f32, bottom: f32, top: f32, znear: f32, zfar: f32) -> Matrix4f {
+        let mut res : Matrix4f = Default::default();
+
+        res.data[0][0] = 2.0 / (right - left);
+        res.data[1][1] = 2.0 / (top - bottom);
+        res.data[2][2] = -2.0 / (zfar - znear);
+        res.data[3][0] = - (right + left) / (right - left);
+        res.data[3][1] = - (top + bottom) / (top - bottom);
+        res.data[3][2] = - (zfar + znear) / (zfar - znear);
+
+        res
+    }
+
     #[doc = "Generate matrix for camera."]
     pub fn look_at(eye:Vector3f, center:Vector3f, up:Vector3f) -> Matrix4f {
         let f = center.sub(&eye).normalize();
@@ -105,6 +119,65 @@ impl Matrix4f {
         t.data[3][2] = -eye.2;
 
         m * t
+    }
+
+    #[doc = "Generate translation matrix."]
+    pub fn translate(t:Vector3f) -> Matrix4f {
+        let mut res : Matrix4f = Default::default();
+
+        res.data[3][0] = t.0;
+        res.data[3][1] = t.1;
+        res.data[3][2] = t.2;
+
+        res
+    }
+
+    #[doc = "Generate translation matrix."]
+    pub fn scale(s:Vector3f) -> Matrix4f {
+        let mut res : Matrix4f = Default::default();
+
+        res.data[0][0] = s.0;
+        res.data[1][1] = s.1;
+        res.data[2][2] = s.2;
+
+        res
+    }
+
+    #[doc = "Generate rotate matrix."]
+    pub fn rotate(angle:f32, axis:Vector3f) -> Matrix4f {
+        let mut res : Matrix4f = Default::default();
+
+        let a = (angle / 2.0).to_radians().sin();
+        let vn = axis.normalize();
+
+        let x = vn.0 * a;
+        let y = vn.1 * a;
+        let z = vn.2 * a;
+        let w = (angle / 2.0).to_radians().cos();
+
+        let x2 = x * x;
+        let y2 = y * y;
+        let z2 = z * z;
+        let xy = x * y;
+        let xz = x * z;
+        let yz = y * z;
+        let wx = w * x;
+        let wy = w * y;
+        let wz = w * z;
+
+        res.data[0][0] = 1.0 - 2.0 * (y2 + z2);
+        res.data[0][1] = 2.0 * (xy + wz);
+        res.data[0][2] = 2.0 * (xz - wy);
+
+        res.data[1][0] = 2.0 * (xy - wz);
+        res.data[1][1] = 1.0 - 2.0 * (x2 + z2);
+        res.data[1][2] = 2.0 * (yz + wx);
+
+        res.data[2][0] = 2.0 * (xz + wy);
+        res.data[2][1] = 2.0 * (yz - wx);
+        res.data[2][2] = 1.0 - 2.0 * (x2 + y2);
+
+        res
     }
 }
 
