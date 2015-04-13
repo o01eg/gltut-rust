@@ -118,7 +118,7 @@ impl Matrix4f {
         t.data[3][1] = -eye.1;
         t.data[3][2] = -eye.2;
 
-        m * t
+        m.mul(&t)
     }
 
     #[doc = "Generate translation matrix."]
@@ -179,23 +179,9 @@ impl Matrix4f {
 
         res
     }
-}
 
-impl Default for Matrix4f {
-    fn default() -> Matrix4f {
-        Matrix4f { data : [
-            [1.0, 0.0, 0.0, 0.0,],
-            [0.0, 1.0, 0.0, 0.0,],
-            [0.0, 0.0, 1.0, 0.0,],
-            [0.0, 0.0, 0.0, 1.0,],
-        ] }
-    }
-}
-
-impl Mul for Matrix4f {
-    type Output = Matrix4f;
-
-    fn mul(self, _rhs: Matrix4f) -> Matrix4f {
+    #[doc = "Matrix multiplication."]
+    pub fn mul(&self, _rhs: &Matrix4f) -> Matrix4f {
         let mut res : Matrix4f = Default::default();
 
         for i in 0..4 { // row
@@ -209,6 +195,17 @@ impl Mul for Matrix4f {
         }
 
         res
+    }
+}
+
+impl Default for Matrix4f {
+    fn default() -> Matrix4f {
+        Matrix4f { data : [
+            [1.0, 0.0, 0.0, 0.0,],
+            [0.0, 1.0, 0.0, 0.0,],
+            [0.0, 0.0, 1.0, 0.0,],
+            [0.0, 0.0, 0.0, 1.0,],
+        ] }
     }
 }
 

@@ -67,7 +67,7 @@ impl GLScene {
         println!("Model matrix: {:?}", model);
 
         // Our ModelViewProjection : multiplication of our 3 matrices        
-        let mvp = projection * view * model; // Remember, matrix multiplication is the other way around
+        let mvp = projection.mul(&view).mul(&model); // Remember, matrix multiplication is the other way around
 
         println!("MVP matrix: {:?}", mvp);
         
