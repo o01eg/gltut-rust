@@ -29,7 +29,7 @@ fn main() {
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask
         , sdl2::video::GLProfile::GLCoreProfile as i32); // Don't use old OpenGL
 
-    let window = sdl2::video::Window::new("Tutorial 02", sdl2::video::WindowPos::PosCentered
+    let window = sdl2::video::Window::new(&sdl_context, "Tutorial 02", sdl2::video::WindowPos::PosCentered
         , sdl2::video::WindowPos::PosCentered, 1024, 768, sdl2::video::OPENGL).unwrap();
 
     let gl_context = window.gl_create_context().unwrap();
