@@ -9,6 +9,7 @@ readme = "README.md"
 [dependencies]
 sdl2 = "*"
 gl = "*"
+libc = "*"
 
 [lib]
 name = "tutcommon"

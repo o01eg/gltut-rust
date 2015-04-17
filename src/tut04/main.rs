@@ -12,10 +12,19 @@ extern crate sdl2;
 // Include OpenGL library.
 extern crate gl;
 
+extern crate libc;
+
+use gl::types::{GLenum, GLuint, GLsizei, GLchar};
+use libc::types::common::c95::c_void;
+
 extern crate tutcommon;
 
 #[doc = "Module for GL drawing stuff."]
 pub mod glscene;
+
+extern "system" fn on_debug_message(source: GLenum, gltype: GLenum, id: GLuint, severity: GLenum, length: GLsizei, message: *const GLchar, user_param: *mut c_void) {
+    println!("[OpenGL] {:?}", message);
+}
 
 fn main() {
     // Initialize SDL2:
@@ -26,6 +35,7 @@ fn main() {
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLMultiSampleSamples, 4); // 4x antialiasing
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 3); // OpenGL 3.3
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 3);
+    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextFlags, sdl2::video::GL_CONTEXT_DEBUG.bits());
     sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask
         , sdl2::video::GLProfile::GLCoreProfile as i32); // Don't use old OpenGL
 
@@ -37,6 +47,12 @@ fn main() {
     gl::load_with(|s| unsafe {
         std::mem::transmute(sdl2::video::gl_get_proc_address(s))
     });
+
+    unsafe {
+        gl::Enable(gl::DEBUG_OUTPUT_SYNCHRONOUS);
+        gl::DebugMessageControl(gl::DONT_CARE, gl::DONT_CARE, gl::DONT_CARE, 0, std::ptr::null(), gl::TRUE);
+        gl::DebugMessageCallback(on_debug_message, std::ptr::null());
+    }
 
     unsafe {
         gl::ClearColor(0.0, 0.0, 0.4, 0.0);
