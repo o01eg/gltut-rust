@@ -14,6 +14,8 @@ extern crate gl;
 
 extern crate libc;
 
+extern crate rand;
+
 use gl::types::{GLenum, GLuint, GLsizei, GLchar};
 use libc::types::common::c95::c_void;
 use std::ffi::CStr;

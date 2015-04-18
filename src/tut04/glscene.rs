@@ -3,6 +3,9 @@ use std;
 use gl;
 use gl::types::{GLchar, GLfloat, GLint, GLuint};
 
+use rand;
+use rand::Rng;
+
 use tutcommon;
 
 // An array of 3 vectors which represents 3 vertices.
@@ -60,52 +63,13 @@ static G_VERTEX_BUFFER_DATA : [GLfloat; 12*3*3] = [
     1.0,-1.0, 1.0
 ];
 
-// One color for each vertex. They were generated randomly.
-static G_COLOR_BUFFER_DATA : [GLfloat; 12*3*3] = [
-    0.583,  0.771,  0.014,
-    0.609,  0.115,  0.436,
-    0.327,  0.483,  0.844,
-    0.822,  0.569,  0.201,
-    0.435,  0.602,  0.223,
-    0.310,  0.747,  0.185,
-    0.597,  0.770,  0.761,
-    0.559,  0.436,  0.730,
-    0.359,  0.583,  0.152,
-    0.483,  0.596,  0.789,
-    0.559,  0.861,  0.639,
-    0.195,  0.548,  0.859,
-    0.014,  0.184,  0.576,
-    0.771,  0.328,  0.970,
-    0.406,  0.615,  0.116,
-    0.676,  0.977,  0.133,
-    0.971,  0.572,  0.833,
-    0.140,  0.616,  0.489,
-    0.997,  0.513,  0.064,
-    0.945,  0.719,  0.592,
-    0.543,  0.021,  0.978,
-    0.279,  0.317,  0.505,
-    0.167,  0.620,  0.077,
-    0.347,  0.857,  0.137,
-    0.055,  0.953,  0.042,
-    0.714,  0.505,  0.345,
-    0.783,  0.290,  0.734,
-    0.722,  0.645,  0.174,
-    0.302,  0.455,  0.848,
-    0.225,  0.587,  0.040,
-    0.517,  0.713,  0.338,
-    0.053,  0.959,  0.120,
-    0.393,  0.621,  0.362,
-    0.673,  0.211,  0.457,
-    0.820,  0.883,  0.371,
-    0.982,  0.099,  0.879
-];
-
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
 pub struct GLScene {
     vertex_array_id : GLuint, //VAO id.
     vertex_buffer_id : GLuint, //VBO id.
     tri_vertex_buffer_id : GLuint,
-    color_buffer_id : GLuint, // Color buffer.
+    color_buffer_data : Vec<GLfloat>, // Color buffer 12 * 3 * 3
+    color_buffer_id : GLuint, // Color buffer id.
     tri_color_buffer_id : GLuint,
     program_id : GLuint, //Shader program id.
     matrix_id : GLint, // MVP uniform locaion.
@@ -195,13 +159,19 @@ impl GLScene {
 
         let mut color_buffer_id = 0;
         let mut tri_color_buffer_id = 0;
+        let mut color_buffer_data = Vec::with_capacity(12 * 3 * 3);
+
+        let mut rng = rand::thread_rng();
+        for _ in 0 .. 12 * 3 * 3 {
+            color_buffer_data.push(rng.next_f32());
+        }
 
         unsafe {
             gl::GenBuffers(1, &mut color_buffer_id);
             gl::BindBuffer(gl::ARRAY_BUFFER, color_buffer_id);
             gl::BufferData(gl::ARRAY_BUFFER
-                , std::mem::size_of_val(&G_COLOR_BUFFER_DATA) as i64
-                , std::mem::transmute(&G_COLOR_BUFFER_DATA)
+                , (std::mem::size_of::<GLfloat>() * color_buffer_data.len()) as i64
+                , std::mem::transmute(color_buffer_data.as_ptr())
                 , gl::STATIC_DRAW);
         }
 
@@ -217,6 +187,7 @@ impl GLScene {
         GLScene { vertex_array_id : vertex_array_id
             , vertex_buffer_id : vertex_buffer_id
             , tri_vertex_buffer_id : tri_vertex_buffer_id
+            , color_buffer_data : color_buffer_data
             , color_buffer_id : color_buffer_id
             , tri_color_buffer_id : tri_color_buffer_id
             , program_id : program_id
