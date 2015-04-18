@@ -32,3 +32,7 @@ path = "src/tut03/main.rs"
 name = "tut04"
 path = "src/tut04/main.rs"
 
+[[bin]]
+name = "tut05"
+path = "src/tut05/main.rs"
+
