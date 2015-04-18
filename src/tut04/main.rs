@@ -16,6 +16,7 @@ extern crate libc;
 
 use gl::types::{GLenum, GLuint, GLsizei, GLchar};
 use libc::types::common::c95::c_void;
+use std::ffi::CStr;
 
 extern crate tutcommon;
 
@@ -23,7 +24,11 @@ extern crate tutcommon;
 pub mod glscene;
 
 extern "system" fn on_debug_message(source: GLenum, gltype: GLenum, id: GLuint, severity: GLenum, length: GLsizei, message: *const GLchar, user_param: *mut c_void) {
-    println!("[OpenGL] {:?}", message);
+    let msg = unsafe {
+        String::from_utf8_lossy(CStr::from_ptr(message).to_bytes())
+    };
+
+    println!("[OpenGL] {}", msg);
 }
 
 fn main() {
