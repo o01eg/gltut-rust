@@ -25,7 +25,7 @@ extern crate tutcommon;
 #[doc = "Module for GL drawing stuff."]
 pub mod glscene;
 
-extern "system" fn on_debug_message(source: GLenum, gltype: GLenum, id: GLuint, severity: GLenum, length: GLsizei, message: *const GLchar, user_param: *mut c_void) {
+extern "system" fn on_debug_message(source: GLenum, gltype: GLenum, id: GLuint, severity: GLenum, length: GLsizei, message: *const GLchar, _: *mut c_void) {
     let msg = unsafe {
         String::from_utf8_lossy(CStr::from_ptr(message).to_bytes())
     };
@@ -70,7 +70,7 @@ fn main() {
     }
 
     // init scene.
-    let scene = glscene::GLScene::new();
+    let mut scene = glscene::GLScene::new();
 
     let mut event_pump = sdl_context.event_pump();
     'evloop : loop {
@@ -78,6 +78,8 @@ fn main() {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
         
+        scene.update();
+
         scene.draw();
 
         // Swap buffers.

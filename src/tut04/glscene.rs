@@ -160,7 +160,6 @@ impl GLScene {
         let mut color_buffer_id = 0;
         let mut tri_color_buffer_id = 0;
         let mut color_buffer_data = Vec::with_capacity(12 * 3 * 3);
-
         let mut rng = rand::thread_rng();
         for _ in 0 .. 12 * 3 * 3 {
             color_buffer_data.push(rng.next_f32());
@@ -196,9 +195,27 @@ impl GLScene {
             , tri_mvp : tri_mvp }
     }
 
+    #[doc = "Update data each frame."]
+    pub fn update(&mut self) {
+        // change color each frame
+        self.color_buffer_data.truncate(0);
+        self.color_buffer_data.reserve(12 * 3 * 3);
+        let mut rng = rand::thread_rng();
+        for _ in 0 .. 12 * 3 * 3 {
+            self.color_buffer_data.push(rng.next_f32());
+        }
+
+        unsafe {
+            gl::BindBuffer(gl::ARRAY_BUFFER, self.color_buffer_id);
+            gl::BufferData(gl::ARRAY_BUFFER
+                , (std::mem::size_of::<GLfloat>() * self.color_buffer_data.len()) as i64
+                , std::mem::transmute(self.color_buffer_data.as_ptr())
+                , gl::STATIC_DRAW);
+        }
+    }
+
     #[doc = "Render scene each frame."]
     pub fn draw(&self) {
-
         unsafe {
             //1st attribute buffer : vertices
             gl::EnableVertexAttribArray(0);
