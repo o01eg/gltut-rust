@@ -55,10 +55,12 @@ fn main() {
         std::mem::transmute(sdl2::video::gl_get_proc_address(s))
     });
 
-    unsafe {
-        gl::Enable(gl::DEBUG_OUTPUT_SYNCHRONOUS);
-        gl::DebugMessageControl(gl::DONT_CARE, gl::DONT_CARE, gl::DONT_CARE, 0, std::ptr::null(), gl::TRUE);
-        gl::DebugMessageCallback(on_debug_message, std::ptr::null());
+    if sdl2::video::gl_extension_supported("ARB_debug_support").unwrap_or(false) {
+        unsafe {
+            gl::Enable(gl::DEBUG_OUTPUT_SYNCHRONOUS);
+            gl::DebugMessageControl(gl::DONT_CARE, gl::DONT_CARE, gl::DONT_CARE, 0, std::ptr::null(), gl::TRUE);
+            gl::DebugMessageCallback(on_debug_message, std::ptr::null());
+        }
     }
 
     unsafe {
