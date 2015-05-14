@@ -3,8 +3,7 @@ use std;
 use gl;
 use gl::types::{GLchar, GLfloat, GLint, GLuint};
 
-use rand;
-use rand::Rng;
+use libc::types::common::c95::c_void;
 
 use tutcommon;
 
@@ -49,14 +48,55 @@ static G_VERTEX_BUFFER_DATA : [GLfloat; 12*3*3] = [
     1.0,-1.0, 1.0
 ];
 
+// Two UV coordinatesfor each vertex. They were created with Blender. You'll learn shortly how to do this yourself.
+static G_UV_BUFFER_DATA : [GLfloat; 12*3*2] = [
+    0.000059, 1.0-0.000004,
+    0.000103, 1.0-0.336048,
+    0.335973, 1.0-0.335903,
+    1.000023, 1.0-0.000013,
+    0.667979, 1.0-0.335851,
+    0.999958, 1.0-0.336064,
+    0.667979, 1.0-0.335851,
+    0.336024, 1.0-0.671877,
+    0.667969, 1.0-0.671889,
+    1.000023, 1.0-0.000013,
+    0.668104, 1.0-0.000013,
+    0.667979, 1.0-0.335851,
+    0.000059, 1.0-0.000004,
+    0.335973, 1.0-0.335903,
+    0.336098, 1.0-0.000071,
+    0.667979, 1.0-0.335851,
+    0.335973, 1.0-0.335903,
+    0.336024, 1.0-0.671877,
+    1.000004, 1.0-0.671847,
+    0.999958, 1.0-0.336064,
+    0.667979, 1.0-0.335851,
+    0.668104, 1.0-0.000013,
+    0.335973, 1.0-0.335903,
+    0.667979, 1.0-0.335851,
+    0.335973, 1.0-0.335903,
+    0.668104, 1.0-0.000013,
+    0.336098, 1.0-0.000071,
+    0.000103, 1.0-0.336048,
+    0.000004, 1.0-0.671870,
+    0.336024, 1.0-0.671877,
+    0.000103, 1.0-0.336048,
+    0.336024, 1.0-0.671877,
+    0.335973, 1.0-0.335903,
+    0.667969, 1.0-0.671889,
+    1.000004, 1.0-0.671847,
+    0.667979, 1.0-0.335851
+];
+
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
 pub struct GLScene {
     vertex_array_id : GLuint, //VAO id.
     vertex_buffer_id : GLuint, //VBO id.
-    color_buffer_data : Vec<GLfloat>, // Color buffer 12 * 3 * 3
-    color_buffer_id : GLuint, // Color buffer id.
+    uv_buffer_id : GLuint, // UV id.
     program_id : GLuint, //Shader program id.
-    matrix_id : GLint, // MVP uniform locaion.
+    texture_id : GLuint, // Texture id.
+    matrix_uniform_id : GLint, // MVP uniform locaion.
+    texture_uniform_id : GLint, // myTextureSampler uniform location.
     mvp : tutcommon::Matrix4f, // Matrix 
 }
 
@@ -77,9 +117,13 @@ impl GLScene {
         let program_id = GLScene::load_program("data/tut05/TransformVertexShader.vertexshader"
             , "data/tut05/TextureFragmentShader.fragmentshader");
 
-        let matrix_id = unsafe {
+        let matrix_uniform_id = unsafe {
             // Get a handle for our "MVP" uniform 
             gl::GetUniformLocation(program_id, "MVP".as_ptr() as * const i8)
+        };
+
+        let texture_uniform_id = unsafe {
+            gl::GetUniformLocation(program_id, "myTextureSampler".as_ptr() as * const i8)
         };
 
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
@@ -114,53 +158,48 @@ impl GLScene {
                 , gl::STATIC_DRAW);
         }
 
-        let mut color_buffer_id = 0;
-        let mut color_buffer_data = Vec::with_capacity(12 * 3 * 3);
-        let mut rng = rand::thread_rng();
-        for _ in 0 .. 12 * 3 * 3 {
-            color_buffer_data.push(rng.next_f32());
-        }
+        let mut uv_buffer_id = 0;
 
         unsafe {
-            gl::GenBuffers(1, &mut color_buffer_id);
-            gl::BindBuffer(gl::ARRAY_BUFFER, color_buffer_id);
+            gl::GenBuffers(1, &mut uv_buffer_id);
+            gl::BindBuffer(gl::ARRAY_BUFFER, uv_buffer_id);
             gl::BufferData(gl::ARRAY_BUFFER
-                , (std::mem::size_of::<GLfloat>() * color_buffer_data.len()) as i64
-                , std::mem::transmute(color_buffer_data.as_ptr())
+                , std::mem::size_of_val(&G_UV_BUFFER_DATA) as i64
+                , std::mem::transmute(&G_UV_BUFFER_DATA)
                 , gl::STATIC_DRAW);
         }
 
+        let texture_id = GLScene::load_texture("data/tut05/uvtemplate.bmp");
+
         GLScene { vertex_array_id : vertex_array_id
             , vertex_buffer_id : vertex_buffer_id
-            , color_buffer_data : color_buffer_data
-            , color_buffer_id : color_buffer_id
+            , uv_buffer_id : uv_buffer_id
+            , texture_id : texture_id
             , program_id : program_id
-            , matrix_id : matrix_id
+            , matrix_uniform_id : matrix_uniform_id
+            , texture_uniform_id : texture_uniform_id
             , mvp : mvp }
     }
 
     #[doc = "Update data each frame."]
     pub fn update(&mut self) {
-        // change color each frame
-        self.color_buffer_data.truncate(0);
-        self.color_buffer_data.reserve(12 * 3 * 3);
-        let mut rng = rand::thread_rng();
-        for _ in 0 .. 12 * 3 * 3 {
-            self.color_buffer_data.push(rng.next_f32());
-        }
-
-        unsafe {
-            gl::BindBuffer(gl::ARRAY_BUFFER, self.color_buffer_id);
-            gl::BufferData(gl::ARRAY_BUFFER
-                , (std::mem::size_of::<GLfloat>() * self.color_buffer_data.len()) as i64
-                , std::mem::transmute(self.color_buffer_data.as_ptr())
-                , gl::STATIC_DRAW);
-        }
     }
 
     #[doc = "Render scene each frame."]
     pub fn draw(&self) {
         unsafe {
+            // Use our shader
+            gl::UseProgram(self.program_id);
+
+            // Send our transformation to the currently bound shader,
+            // in the "MVP" uniform.
+            gl::UniformMatrix4fv(self.matrix_uniform_id, 1, gl::FALSE, self.mvp.as_ptr());
+
+            gl::ActiveTexture(gl::TEXTURE0);
+            gl::BindTexture(gl::TEXTURE_2D, self.texture_id);
+            // Set our "myTextureSampler" sampler to user Texture Unit 0
+            gl::Uniform1i(self.texture_uniform_id, 0);
+
             //1st attribute buffer : vertices
             gl::EnableVertexAttribArray(0);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_buffer_id);
@@ -175,22 +214,15 @@ impl GLScene {
 
             // 2nd attribute buffer : colors
             gl::EnableVertexAttribArray(1);
-            gl::BindBuffer(gl::ARRAY_BUFFER, self.color_buffer_id);
+            gl::BindBuffer(gl::ARRAY_BUFFER, self.uv_buffer_id);
             gl::VertexAttribPointer(
                 1, // attribute 1. No particular reason for 1, but must match the layout in the shader.
-                3, // size
+                2, // size
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
                 0, // stride
                 std::ptr::null() // array buffer offset
             );
-
-            // Use our shader
-            gl::UseProgram(self.program_id);
-
-            // Send our transformation to the currently bound shader,
-            // in the "MVP" uniform.
-            gl::UniformMatrix4fv(self.matrix_id, 1, gl::FALSE, self.mvp.as_ptr());
 
             // Draw the triangle!
             // 12*3 indices starting at 0 -> 12 triangles -> 6 squares
@@ -263,6 +295,29 @@ impl GLScene {
             println!("Shader compile log: {}", String::from_utf8_lossy(std::mem::transmute::<&[i8],&[u8]>(&buf[..])));
         }
     }
+
+    fn load_texture(file:&str) -> GLuint {
+        let mut surface = tutcommon::load_bmp(file);
+
+        let (width, height) = surface.get_size();
+
+        surface.get_pixel_format();
+
+        let mut texture_id = 0;
+        surface.with_lock(|data| {
+            unsafe {
+                gl::GenTextures(1, &mut texture_id);
+                gl::BindTexture(gl::TEXTURE_2D, texture_id);
+
+                gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, width, height, 0, gl::BGR, gl::UNSIGNED_BYTE, data.as_ptr() as * const c_void);
+
+                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST as i32);
+                gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST as i32);
+            }
+        });
+
+        texture_id
+    }
 }
 
 #[doc = "Always clean up after yourself."]
@@ -272,7 +327,9 @@ impl Drop for GLScene {
             gl::DeleteProgram(self.program_id);
 
             gl::DeleteBuffers(1, &self.vertex_buffer_id);
-            gl::DeleteBuffers(1, &self.color_buffer_id);
+            gl::DeleteBuffers(1, &self.uv_buffer_id);
+
+            gl::DeleteTextures(1, &self.texture_id);
 
             gl::DeleteVertexArrays(1, &self.vertex_array_id);
         }
