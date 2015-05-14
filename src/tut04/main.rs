@@ -25,7 +25,7 @@ extern crate tutcommon;
 #[doc = "Module for GL drawing stuff."]
 pub mod glscene;
 
-extern "system" fn on_debug_message(source: GLenum, gltype: GLenum, id: GLuint, severity: GLenum, length: GLsizei, message: *const GLchar, _: *mut c_void) {
+extern "system" fn on_debug_message(_source: GLenum, _gltype: GLenum, _id: GLuint, _severity: GLenum, _length: GLsizei, message: *const GLchar, _: *mut c_void) {
     let msg = unsafe {
         String::from_utf8_lossy(CStr::from_ptr(message).to_bytes())
     };
@@ -49,7 +49,7 @@ fn main() {
     let window = sdl2::video::Window::new(&sdl_context, "Tutorial 04", sdl2::video::WindowPos::PosCentered
         , sdl2::video::WindowPos::PosCentered, 1024, 768, sdl2::video::OPENGL).unwrap();
 
-    let gl_context = window.gl_create_context().unwrap();
+    let _gl_context = window.gl_create_context().unwrap();
 
     gl::load_with(|s| unsafe {
         std::mem::transmute(sdl2::video::gl_get_proc_address(s))

@@ -1,7 +1,7 @@
 use std;
 
 use gl;
-use gl::types::{GLchar, GLfloat, GLint, GLuint};
+use gl::types::{GLfloat, GLint, GLuint};
 
 use tutcommon;
 
@@ -37,12 +37,12 @@ impl GLScene {
         let mut vertex_buffer_id = 0;
 
         // Create and compile our GLSL program from the shaders
-        let program_id = GLScene::load_program("data/tut03/SimpleTransform.vertexshader"
+        let program_id = tutcommon::glutils::load_program("data/tut03/SimpleTransform.vertexshader"
             , "data/tut03/SingleColor.fragmentshader");
 
         let matrix_id = unsafe {
             // Get a handle for our "MVP" uniform 
-            gl::GetUniformLocation(program_id, "MVP".as_ptr() as * const i8)
+            gl::GetUniformLocation(program_id, "MVP\x00".as_ptr() as * const i8)
         };
 
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
@@ -120,69 +120,6 @@ impl GLScene {
             gl::DrawArrays(gl::TRIANGLES, 0, 3);
 
             gl::DisableVertexAttribArray(0);
-        }
-    }
-
-    fn load_program(vertex_file_path : &str, fragment_file_path : &str) -> GLuint {
-        unsafe {
-            // Create the shaders.
-            let vertex_shader_id = gl::CreateShader(gl::VERTEX_SHADER);
-            let fragment_shader_id = gl::CreateShader(gl::FRAGMENT_SHADER);
-        
-            // Read the Vertex Shader code from the file.
-            let vertex_shader_code = tutcommon::read_source_from_file(vertex_file_path);
-        
-            // Read the Fragment Shader code from the file
-            let fragment_shader_code = tutcommon::read_source_from_file(fragment_file_path);
-
-            // Compile Vertex Shader
-            println!("Compiling shader: {}", vertex_file_path);
-            GLScene::compile_and_check_shader(vertex_shader_id, &vertex_shader_code);
-
-            // Compile Fragment Shader
-            println!("Compiling shader: {}", fragment_file_path);
-            GLScene::compile_and_check_shader(fragment_shader_id, &fragment_shader_code);
-
-            // Link the program
-            let program_id = gl::CreateProgram();
-            gl::AttachShader(program_id, vertex_shader_id);
-            gl::AttachShader(program_id, fragment_shader_id);
-            gl::LinkProgram(program_id);
-
-            let mut result = 0;
-            let mut info_log_length = 0;
-
-            // Check the program
-            gl::GetProgramiv(program_id, gl::LINK_STATUS, &mut result);
-            gl::GetProgramiv(program_id, gl::INFO_LOG_LENGTH, &mut info_log_length);
-            let mut buf = Vec::<GLchar>::with_capacity((info_log_length + 1) as usize);
-            buf.set_len((info_log_length + 1) as usize);
-            gl::GetProgramInfoLog(program_id, info_log_length + 1, std::ptr::null_mut(), buf[..].as_mut_ptr());
-            println!("Program link log: {}", String::from_utf8_lossy(std::mem::transmute::<&[i8],&[u8]>(&buf[..])));
-
-            gl::DeleteShader(vertex_shader_id);
-            gl::DeleteShader(fragment_shader_id);
-
-            program_id
-        }
-    }
-
-    fn compile_and_check_shader(shader_id : GLuint, shader_source : &str) {
-        let mut result = 0;
-        let mut info_log_length = 0;
-        unsafe {
-            let source : &[i8] = std::mem::transmute(shader_source);
-            // Compile Shader
-            gl::ShaderSource(shader_id, 1, std::mem::transmute(&source), std::ptr::null());
-            gl::CompileShader(shader_id);
-
-            // Check Shader
-            gl::GetShaderiv(shader_id, gl::COMPILE_STATUS, &mut result);
-            gl::GetShaderiv(shader_id, gl::INFO_LOG_LENGTH, &mut info_log_length);
-            let mut buf = Vec::<GLchar>::with_capacity((info_log_length + 1) as usize);
-            buf.set_len((info_log_length + 1) as usize);
-            gl::GetShaderInfoLog(shader_id, info_log_length + 1, std::ptr::null_mut(), buf[..].as_mut_ptr());
-            println!("Shader compile log: {}", String::from_utf8_lossy(std::mem::transmute::<&[i8],&[u8]>(&buf[..])));
         }
     }
 }

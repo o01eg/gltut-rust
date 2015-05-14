@@ -11,22 +11,16 @@
 // Include SDL2 library.
 extern crate sdl2;
 
+extern crate gl;
+
 use std::default::Default;
-use std::fs::File;
-use std::io::Read;
 use std::ops::Mul;
 use std::path::Path;
 use std::ffi::OsStr;
 
-#[doc = "Read content of file into string."]
-pub fn read_source_from_file<P: AsRef<Path>>(path : P) -> String {
-    let mut res = String::new();
-    File::open(path).unwrap().read_to_string(&mut res).unwrap();
-    return res;
-}
+pub mod glutils;
 
 #[doc = "Load BMP into surface."]
-
 pub fn load_bmp<S: AsRef<OsStr> + ?Sized>(s: &S) -> sdl2::surface::Surface {
     return sdl2::surface::Surface::from_bmp(Path::new(s)).unwrap();
 }
