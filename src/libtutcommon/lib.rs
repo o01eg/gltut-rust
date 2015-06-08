@@ -22,7 +22,7 @@ pub mod glutils;
 
 #[doc = "Load BMP into surface."]
 pub fn load_bmp<S: AsRef<OsStr> + ?Sized>(s: &S) -> sdl2::surface::Surface {
-    return sdl2::surface::Surface::from_bmp(Path::new(s)).unwrap();
+    return sdl2::surface::Surface::load_bmp(Path::new(s)).unwrap();
 }
 
 #[doc = "Vector with 3 components (x,y,z)"]

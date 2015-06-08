@@ -35,19 +35,16 @@ extern "system" fn on_debug_message(_source: GLenum, _gltype: GLenum, _id: GLuin
 
 fn main() {
     // Initialize SDL2:
-    let sdl_context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
+    let mut sdl_context = sdl2::InitBuilder::new().video().unwrap();
 
     // Init OpenGL parameters:
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLMultiSampleBuffers, 1);
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLMultiSampleSamples, 4); // 4x antialiasing
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 3); // OpenGL 3.3
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 3);
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextFlags, sdl2::video::GL_CONTEXT_DEBUG.bits());
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask
-        , sdl2::video::GLProfile::GLCoreProfile as i32); // Don't use old OpenGL
+    sdl2::video::gl_attr::set_multisample_buffers(1);
+    sdl2::video::gl_attr::set_multisample_samples(4); // 4x antialiasing
+    sdl2::video::gl_attr::set_context_version(3, 3); // OpenGL 3.3
+    sdl2::video::gl_attr::set_context_flags().debug().set();
+    sdl2::video::gl_attr::set_context_profile(sdl2::video::GLProfile::Core); // Don't use old OpenGL
 
-    let window = sdl2::video::Window::new(&sdl_context, "Tutorial 05", sdl2::video::WindowPos::PosCentered
-        , sdl2::video::WindowPos::PosCentered, 1024, 768, sdl2::video::OPENGL).unwrap();
+    let window = sdl_context.window("Tutorial 05", 1024, 768).position_centered().opengl().build().unwrap();
 
     let _gl_context = window.gl_create_context().unwrap();
 
@@ -55,7 +52,7 @@ fn main() {
         std::mem::transmute(sdl2::video::gl_get_proc_address(s))
     });
 
-    if sdl2::video::gl_extension_supported("ARB_debug_support").unwrap_or(false) {
+    if sdl2::video::gl_extension_supported("ARB_debug_support") {
         unsafe {
             gl::Enable(gl::DEBUG_OUTPUT_SYNCHRONOUS);
             gl::DebugMessageControl(gl::DONT_CARE, gl::DONT_CARE, gl::DONT_CARE, 0, std::ptr::null(), gl::TRUE);

@@ -14,19 +14,16 @@ extern crate gl;
 
 fn main() {
     // Initialize SDL2:
-    let sdl_context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
+    let mut sdl_context = sdl2::InitBuilder::new().video().unwrap();
 
     // Init OpenGL parameters:
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLMultiSampleBuffers, 1);
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLMultiSampleSamples, 4); // 4x antialiasing
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMajorVersion, 3); // OpenGL 3.3
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextMinorVersion, 3);
-    sdl2::video::gl_set_attribute(sdl2::video::GLAttr::GLContextProfileMask
-        , sdl2::video::GLProfile::GLCoreProfile as i32); // Don't use old OpenGL
+    sdl2::video::gl_attr::set_multisample_buffers(1);
+    sdl2::video::gl_attr::set_multisample_samples(4); // 4x antialiasing
+    sdl2::video::gl_attr::set_context_version(3, 3); // OpenGL 3.3
+    sdl2::video::gl_attr::set_context_profile(sdl2::video::GLProfile::Core); // Don't use old OpenGL
 
-    let window = sdl2::video::Window::new(&sdl_context, "Tutorial 01", sdl2::video::WindowPos::PosCentered
-        , sdl2::video::WindowPos::PosCentered, 1024, 768, sdl2::video::OPENGL).unwrap();
-
+    let window = sdl_context.window("Tutorial 01", 1024, 768).position_centered().opengl().build().unwrap();
+    
     let _gl_context = window.gl_create_context().unwrap();
 
     gl::load_with(|s| unsafe {
