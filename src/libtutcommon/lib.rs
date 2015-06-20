@@ -3,7 +3,7 @@
 #![deny(non_snake_case)]
 #![deny(non_upper_case_globals)]
 
-#![feature(std_misc)]
+#![feature(float_extras)]
 
 #![doc = "Common stuff for tutorials."]
 #![crate_name = "tutcommon"]
