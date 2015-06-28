@@ -234,7 +234,7 @@ impl GLScene {
     }
 
     fn load_texture(file:&str) -> GLuint {
-        let mut surface = tutcommon::load_bmp(file);
+        let surface = tutcommon::load_bmp(file);
 
         let (width, height) = surface.get_size();
 

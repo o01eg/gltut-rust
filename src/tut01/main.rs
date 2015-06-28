@@ -51,7 +51,7 @@ fn main() {
                             keymod: _,
                             repeat: _, 
                         } => {
-                    if scancode == sdl2::scancode::ScanCode::Escape {
+                    if scancode == Some(sdl2::keyboard::Scancode::Escape) {
                         return;
                     }
                 }
