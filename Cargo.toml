@@ -11,6 +11,7 @@ sdl2 = "*"
 gl = "*"
 libc = "*"
 rand = "*"
+byteorder = "*"
 
 [lib]
 name = "tutcommon"
