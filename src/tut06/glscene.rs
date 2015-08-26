@@ -114,8 +114,8 @@ impl GLScene {
         }
 
         // Create and compile our GLSL program from the shaders
-        let program_id = tutcommon::glutils::load_program("data/tut05/TransformVertexShader.vertexshader"
-            , "data/tut05/TextureFragmentShader.fragmentshader");
+        let program_id = tutcommon::glutils::load_program("data/tut06/TransformVertexShader.vertexshader"
+            , "data/tut06/TextureFragmentShader.fragmentshader");
 
         let matrix_uniform_id = unsafe {
             // Get a handle for our "MVP" uniform 
@@ -169,9 +169,9 @@ impl GLScene {
                 , gl::STATIC_DRAW);
         }
 
-        let texture_id = tutcommon::glutils::load_dds_texture(&vs, "data/tut05/uvtemplate.DDS").unwrap();
+        let texture_id = tutcommon::glutils::load_dds_texture(&vs, "data/tut06/uvtemplate.DDS").unwrap();
 
-        GLScene {vertex_array_id : vertex_array_id
+        GLScene { vertex_array_id : vertex_array_id
             , vertex_buffer_id : vertex_buffer_id
             , uv_buffer_id : uv_buffer_id
             , texture_id : texture_id

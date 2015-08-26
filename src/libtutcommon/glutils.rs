@@ -2,13 +2,16 @@
 
 use std;
 use std::path::Path;
-use std::ffi::{CString, CStr};
+use std::ffi::{OsStr, CString, CStr};
 use std::fs::File;
 use std::io::{Read, Result};
+
 use byteorder::{ByteOrder, LittleEndian};
 
 use gl;
 use gl::types::{GLchar, GLuint};
+
+use libc::types::common::c95::c_void;
 
 use sdl2;
 
@@ -86,15 +89,43 @@ fn compile_and_check_shader(shader_id : GLuint, shader_source : &CStr) {
     }
 }
 
-#[doc = "Load DDD texture from file path"]
-pub fn load_dds_texture(file:&str) -> Result<GLuint> {
+fn load_bmp<S: AsRef<OsStr> + ?Sized>(s: &S) -> sdl2::surface::Surface {
+    return sdl2::surface::Surface::load_bmp(Path::new(s)).unwrap();
+}
 
-    if ! sdl2::video::gl_extension_supported("GL_EXT_texture_compression_s3tc") {
+#[doc = "Load BMP texture from file path"]
+pub fn load_bmp_texture(file:&str) -> GLuint {
+    let surface = load_bmp(file);
+
+    let (width, height) = surface.size();
+
+    surface.pixel_format();
+
+    let mut texture_id = 0;
+    surface.with_lock(|data| {
+        unsafe {
+            gl::GenTextures(1, &mut texture_id);
+            gl::BindTexture(gl::TEXTURE_2D, texture_id);
+
+            gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, width as i32, height as i32, 0, gl::BGR, gl::UNSIGNED_BYTE, data.as_ptr() as * const c_void);
+
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST as i32);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST as i32);
+        }
+    });
+
+    texture_id
+}
+
+#[doc = "Load DDD texture from file path"]
+pub fn load_dds_texture(vs: &sdl2::VideoSubsystem, file:&str) -> Result<GLuint> {
+
+    if ! vs.gl_extension_supported("GL_EXT_texture_compression_s3tc") {
         panic!("S3TC not supported.");
     }
 
     /* from https://www.opengl.org/registry/specs/EXT/texture_compression_s3tc.txt */
-    const COMPRESSED_RGB_S3TC_DXT1_EXT : GLuint = 0x83F0;
+    //const COMPRESSED_RGB_S3TC_DXT1_EXT : GLuint = 0x83F0;
     const COMPRESSED_RGBA_S3TC_DXT1_EXT : GLuint = 0x83F1;
     const COMPRESSED_RGBA_S3TC_DXT3_EXT : GLuint = 0x83F2;
     const COMPRESSED_RGBA_S3TC_DXT5_EXT : GLuint = 0x83F3;
@@ -127,7 +158,7 @@ pub fn load_dds_texture(file:&str) -> Result<GLuint> {
 
     try!(f.read_to_end(&mut buffer));
 
-    let components = if four_cc == FOURCC_DXT1 { 3 } else { 4 };
+    //let components = if four_cc == FOURCC_DXT1 { 3 } else { 4 };
     let format = match four_cc {
         FOURCC_DXT1 => COMPRESSED_RGBA_S3TC_DXT1_EXT,
         FOURCC_DXT3 => COMPRESSED_RGBA_S3TC_DXT3_EXT,

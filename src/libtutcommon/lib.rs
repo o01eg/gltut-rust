@@ -13,19 +13,16 @@ extern crate sdl2;
 
 extern crate byteorder;
 
+extern crate libc;
+
 extern crate gl;
 
 use std::default::Default;
 use std::ops::Mul;
-use std::path::Path;
-use std::ffi::OsStr;
 
 pub mod glutils;
 
-#[doc = "Load BMP into surface."]
-pub fn load_bmp<S: AsRef<OsStr> + ?Sized>(s: &S) -> sdl2::surface::Surface {
-    return sdl2::surface::Surface::load_bmp(Path::new(s)).unwrap();
-}
+pub mod sdl;
 
 #[doc = "Vector with 3 components (x,y,z)"]
 pub struct Vector3f (pub f32, pub f32, pub f32);

@@ -14,26 +14,13 @@ extern crate gl;
 
 extern crate tutcommon;
 
+use tutcommon::sdl;
+
 #[doc = "Module for GL drawing stuff."]
 pub mod glscene;
 
 fn main() {
-    // Initialize SDL2:
-    let mut sdl_context = sdl2::InitBuilder::new().video().unwrap();
-
-    // Init OpenGL parameters:
-    sdl2::video::gl_attr::set_multisample_buffers(1);
-    sdl2::video::gl_attr::set_multisample_samples(4); // 4x antialiasing
-    sdl2::video::gl_attr::set_context_version(3, 3); // OpenGL 3.3
-    sdl2::video::gl_attr::set_context_profile(sdl2::video::GLProfile::Core); // Don't use old OpenGL
-
-    let window = sdl_context.window("Tutorial 02", 1024, 768).position_centered().opengl().build().unwrap();
-
-    let _gl_context = window.gl_create_context().unwrap();
-
-    gl::load_with(|s| unsafe {
-        std::mem::transmute(sdl2::video::gl_get_proc_address(s))
-    });
+    let mut sdl_context = sdl::SdlContext::init("Tutorial 02");
 
     unsafe {
         gl::ClearColor(0.0, 0.0, 0.4, 0.0);
@@ -42,7 +29,6 @@ fn main() {
     // init scene.
     let scene = glscene::GLScene::new();
 
-    let mut event_pump = sdl_context.event_pump();
     'evloop : loop {
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
@@ -51,9 +37,9 @@ fn main() {
         scene.draw();
 
         // Swap buffers.
-        window.gl_swap_window();
+        sdl_context.window.gl_swap_window();
 
-        for event in event_pump.poll_iter() {
+        for event in sdl_context.event_pump.poll_iter() {
             // check if ESC key pressed or windows closed.
             match event {
                 sdl2::event::Event::Quit { .. } => {
