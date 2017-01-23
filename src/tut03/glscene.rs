@@ -80,7 +80,7 @@ impl GLScene {
 
             // Send vertices to buffer.
             gl::BufferData(gl::ARRAY_BUFFER
-                , std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as i64
+                , std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize
                 , std::mem::transmute(&G_VERTEX_BUFFER_DATA)
                 , gl::STATIC_DRAW);
         }

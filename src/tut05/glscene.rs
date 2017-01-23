@@ -153,7 +153,7 @@ impl GLScene {
 
             // Send vertices to buffer.
             gl::BufferData(gl::ARRAY_BUFFER
-                , std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as i64
+                , std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize
                 , std::mem::transmute(&G_VERTEX_BUFFER_DATA)
                 , gl::STATIC_DRAW);
         }
@@ -164,7 +164,7 @@ impl GLScene {
             gl::GenBuffers(1, &mut uv_buffer_id);
             gl::BindBuffer(gl::ARRAY_BUFFER, uv_buffer_id);
             gl::BufferData(gl::ARRAY_BUFFER
-                , std::mem::size_of_val(&G_UV_BUFFER_DATA) as i64
+                , std::mem::size_of_val(&G_UV_BUFFER_DATA) as isize
                 , std::mem::transmute(&G_UV_BUFFER_DATA)
                 , gl::STATIC_DRAW);
         }

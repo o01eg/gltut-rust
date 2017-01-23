@@ -138,7 +138,7 @@ impl GLScene {
 
             // Send vertices to buffer.
             gl::BufferData(gl::ARRAY_BUFFER
-                , std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as i64
+                , std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize
                 , std::mem::transmute(&G_VERTEX_BUFFER_DATA)
                 , gl::STATIC_DRAW);
         }
@@ -152,7 +152,7 @@ impl GLScene {
 
             // Send vertices to buffer.
             gl::BufferData(gl::ARRAY_BUFFER
-                , std::mem::size_of_val(&G_TRIANGLE_VERTEX_BUFFER_DATA) as i64
+                , std::mem::size_of_val(&G_TRIANGLE_VERTEX_BUFFER_DATA) as isize
                 , std::mem::transmute(&G_TRIANGLE_VERTEX_BUFFER_DATA)
                 , gl::STATIC_DRAW);
         }
@@ -169,7 +169,7 @@ impl GLScene {
             gl::GenBuffers(1, &mut color_buffer_id);
             gl::BindBuffer(gl::ARRAY_BUFFER, color_buffer_id);
             gl::BufferData(gl::ARRAY_BUFFER
-                , (std::mem::size_of::<GLfloat>() * color_buffer_data.len()) as i64
+                , (std::mem::size_of::<GLfloat>() * color_buffer_data.len()) as isize
                 , std::mem::transmute(color_buffer_data.as_ptr())
                 , gl::STATIC_DRAW);
         }
@@ -178,7 +178,7 @@ impl GLScene {
             gl::GenBuffers(1, &mut tri_color_buffer_id);
             gl::BindBuffer(gl::ARRAY_BUFFER, tri_color_buffer_id);
             gl::BufferData(gl::ARRAY_BUFFER
-                , std::mem::size_of_val(&G_TRIANGLE_COLOR_BUFFER_DATA) as i64
+                , std::mem::size_of_val(&G_TRIANGLE_COLOR_BUFFER_DATA) as isize
                 , std::mem::transmute(&G_TRIANGLE_COLOR_BUFFER_DATA)
                 , gl::STATIC_DRAW);
         }
@@ -208,7 +208,7 @@ impl GLScene {
         unsafe {
             gl::BindBuffer(gl::ARRAY_BUFFER, self.color_buffer_id);
             gl::BufferData(gl::ARRAY_BUFFER
-                , (std::mem::size_of::<GLfloat>() * self.color_buffer_data.len()) as i64
+                , (std::mem::size_of::<GLfloat>() * self.color_buffer_data.len()) as isize
                 , std::mem::transmute(self.color_buffer_data.as_ptr())
                 , gl::STATIC_DRAW);
         }

@@ -7,8 +7,7 @@ use std;
 
 use gl;
 
-use gl::types::{GLenum, GLuint, GLsizei, GLchar};
-use libc::types::common::c95::c_void;
+use gl::types::{GLenum, GLuint, GLsizei, GLchar, GLvoid};
 use std::ffi::CStr;
 
 #[doc = "Context of SDL2."]
@@ -29,7 +28,7 @@ pub struct SdlContext {
     _gl_context : sdl2::video::GLContext
 }
 
-extern "system" fn on_debug_message(_source: GLenum, _gltype: GLenum, _id: GLuint, _severity: GLenum, _length: GLsizei, message: *const GLchar, _: *mut c_void) {
+extern "system" fn on_debug_message(_source: GLenum, _gltype: GLenum, _id: GLuint, _severity: GLenum, _length: GLsizei, message: *const GLchar, _: *mut GLvoid) {
     let msg = unsafe {
         String::from_utf8_lossy(CStr::from_ptr(message).to_bytes())
     };

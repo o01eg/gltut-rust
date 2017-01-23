@@ -3,8 +3,6 @@
 #![deny(non_snake_case)]
 #![deny(non_upper_case_globals)]
 
-#![feature(float_extras)]
-
 #![doc = "Common stuff for tutorials."]
 #![crate_name = "tutcommon"]
 
@@ -18,7 +16,6 @@ extern crate libc;
 extern crate gl;
 
 use std::default::Default;
-use std::ops::Mul;
 
 pub mod glutils;
 

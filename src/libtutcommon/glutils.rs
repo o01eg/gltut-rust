@@ -9,9 +9,7 @@ use std::io::{Read, Result};
 use byteorder::{ByteOrder, LittleEndian};
 
 use gl;
-use gl::types::{GLchar, GLuint};
-
-use libc::types::common::c95::c_void;
+use gl::types::{GLchar, GLuint, GLvoid};
 
 use sdl2;
 
@@ -107,7 +105,7 @@ pub fn load_bmp_texture(file:&str) -> GLuint {
             gl::GenTextures(1, &mut texture_id);
             gl::BindTexture(gl::TEXTURE_2D, texture_id);
 
-            gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, width as i32, height as i32, 0, gl::BGR, gl::UNSIGNED_BYTE, data.as_ptr() as * const c_void);
+            gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB as i32, width as i32, height as i32, 0, gl::BGR, gl::UNSIGNED_BYTE, data.as_ptr() as * const GLvoid);
 
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST as i32);
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST as i32);
@@ -117,7 +115,7 @@ pub fn load_bmp_texture(file:&str) -> GLuint {
     texture_id
 }
 
-#[doc = "Load DDD texture from file path"]
+#[doc = "Load DDS texture from file path"]
 pub fn load_dds_texture(vs: &sdl2::VideoSubsystem, file:&str) -> Result<GLuint> {
 
     if ! vs.gl_extension_supported("GL_EXT_texture_compression_s3tc") {
