@@ -4,6 +4,7 @@ use gl;
 use gl::types::{GLfloat, GLint, GLuint};
 
 use tutcommon;
+use tutcommon::matrix::{Matrix4f, Vector3f};
 
 // An array of 3 vectors which represents 3 vertices.
 static G_VERTEX_BUFFER_DATA : [GLfloat; 9] = [
@@ -18,7 +19,7 @@ pub struct GLScene {
     vertex_buffer_id : GLuint, //VBO id.
     program_id : GLuint, //Shader program id.
     matrix_id : GLint, // MVP uniform locaion.
-    mvp : tutcommon::Matrix4f, // Matrix 
+    mvp : Matrix4f, // Matrix 
 }
 
 impl GLScene {
@@ -48,21 +49,21 @@ impl GLScene {
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
         //let projection : tutcommon::Matrix4f = tutcommon::Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
         
-        let projection : tutcommon::Matrix4f = tutcommon::Matrix4f::ortho(-10.0, 10.0, -10.0, 10.0, 0.0, 100.0);
+        let projection : Matrix4f = Matrix4f::ortho(-10.0, 10.0, -10.0, 10.0, 0.0, 100.0);
 
         println!("Projection matrix: {:?}", projection);
         
         // Camera matrix        
-        let view = tutcommon::Matrix4f::look_at(
-            tutcommon::Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
-            tutcommon::Vector3f(0.0, 0.0, 0.0), // and looks at the origin
-            tutcommon::Vector3f(0.0, 1.0, 0.0) // Head is up (set to 0,-1,0 to look upside-down)
+        let view = Matrix4f::look_at(
+            &Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
+            &Vector3f(0.0, 0.0, 0.0), // and looks at the origin
+            &Vector3f(0.0, 1.0, 0.0) // Head is up (set to 0,-1,0 to look upside-down)
         );
 
         println!("View matrix: {:?}", view);
 
         // Model matrix : an identity matrix (model will be at the origin)
-        let model = tutcommon::Matrix4f::rotate(45.0, tutcommon::Vector3f(10.0, 1.0, -2.0)); //std::default::Default::default();
+        let model = Matrix4f::rotate(45.0, Vector3f(10.0, 1.0, -2.0)); //std::default::Default::default();
         
         println!("Model matrix: {:?}", model);
 

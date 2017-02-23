@@ -26,6 +26,8 @@ pub mod glscene;
 fn main() {
     let mut sdl_context = sdl::SdlContext::init("Tutorial 06");
 
+    sdl_context.sdl.mouse().set_relative_mouse_mode(true);
+
     unsafe {
         gl::ClearColor(0.0, 0.0, 0.4, 0.0);
         // Enable depth test
@@ -36,19 +38,9 @@ fn main() {
 
     // init scene.
     let mut scene = glscene::GLScene::new(sdl_context.vs);
+    let mut controls = tutcommon::controls::Controls::new(sdl_context.ts);
 
     'evloop : loop {
-        unsafe {
-            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
-        }
-        
-        scene.update();
-
-        scene.draw();
-
-        // Swap buffers.
-        sdl_context.window.gl_swap_window();
-
         for event in sdl_context.event_pump.poll_iter() {
             // check if ESC key pressed or windows closed.
             match event {
@@ -56,20 +48,43 @@ fn main() {
                     return;
                 }
                 sdl2::event::Event::KeyDown { 
-                            timestamp: _,
-                            window_id: _,
-                            keycode: _,
-                            scancode,
-                            keymod: _,
-                            repeat: _, 
-                        } => {
+                    timestamp: _,
+                    window_id: _,
+                    keycode: _,
+                    scancode,
+                    keymod: _,
+                    repeat: _, 
+                    } => {
                     if scancode == Some(sdl2::keyboard::Scancode::Escape) {
                         return;
                     }
                 }
+                sdl2::event::Event::MouseWheel {
+                    timestamp: _,
+                    window_id: _,
+                    which: _,
+                    x,
+                    y,
+                    direction,
+                } => {
+                    controls.process_wheel(x, y, direction)
+                }
                 _ => ()
             }
         }
+
+        controls.update(&sdl_context.event_pump);
+        scene.update();
+
+        unsafe {
+            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+        }
+
+        scene.draw(&controls);
+
+        // Swap buffers.
+        sdl_context.window.gl_swap_window();
+
     }
 }
 

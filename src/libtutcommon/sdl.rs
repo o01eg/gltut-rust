@@ -16,8 +16,11 @@ pub struct SdlContext {
     #[doc = "SDL2 itself"]
     pub sdl : sdl2::Sdl,
 
-    #[doc = "SDL2 video system"]
+    #[doc = "SDL2 video subsystem"]
     pub vs : sdl2::VideoSubsystem,
+
+    #[doc = "SDL2 timer subsystem"]
+    pub ts : sdl2::TimerSubsystem,
 
     #[doc = "SDL2 window"]
     pub window : sdl2::video::Window,
@@ -42,6 +45,7 @@ impl SdlContext {
         // Initialize SDL2:
         let sdl_context = sdl2::init().unwrap();
         let sdl_vs_context = sdl_context.video().unwrap();
+        let sdl_ts_context = sdl_context.timer().unwrap();
 
         // Init OpenGL parameters:
         sdl_vs_context.gl_attr().set_multisample_buffers(1);
@@ -71,6 +75,7 @@ impl SdlContext {
         SdlContext {
             sdl : sdl_context,
             vs : sdl_vs_context,
+            ts : sdl_ts_context,
             window : window,
             _gl_context : _gl_context,
             event_pump : event_pump,

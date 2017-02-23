@@ -6,6 +6,8 @@ use gl::types::{GLfloat, GLint, GLuint};
 use sdl2;
 
 use tutcommon;
+use tutcommon::matrix::{Matrix4f, Vector3f};
+use tutcommon::controls::Controls;
 
 // Our vertices. Tree consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
 // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
@@ -97,7 +99,6 @@ pub struct GLScene {
     texture_id : GLuint, // Texture id.
     matrix_uniform_id : GLint, // MVP uniform locaion.
     texture_uniform_id : GLint, // myTextureSampler uniform location.
-    mvp : tutcommon::Matrix4f, // Matrix 
 }
 
 impl GLScene {
@@ -125,23 +126,7 @@ impl GLScene {
         let texture_uniform_id = unsafe {
             gl::GetUniformLocation(program_id, "myTextureSampler\x00".as_ptr() as * const i8)
         };
-
-        // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-        let projection : tutcommon::Matrix4f = tutcommon::Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
-        
-        // Camera matrix        
-        let view = tutcommon::Matrix4f::look_at(
-            tutcommon::Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
-            tutcommon::Vector3f(0.0, 0.0, 0.0), // and looks at the origin
-            tutcommon::Vector3f(0.0, 1.0, 0.0) // Head is up (set to 0,-1,0 to look upside-down)
-        );
-
-        // Model matrix : an identity matrix (model will be at the origin)
-        let model = std::default::Default::default();
-
-        // Our ModelViewProjection : multiplication of our 3 matrices        
-        let mvp = projection.mul(&view).mul(&model); // Remember, matrix multiplication is the other way around
-
+               
         let mut vertex_buffer_id = 0;
         
         unsafe {
@@ -178,7 +163,7 @@ impl GLScene {
             , program_id : program_id
             , matrix_uniform_id : matrix_uniform_id
             , texture_uniform_id : texture_uniform_id
-            , mvp : mvp }
+        }
     }
 
     #[doc = "Update data each frame."]
@@ -186,14 +171,21 @@ impl GLScene {
     }
 
     #[doc = "Render scene each frame."]
-    pub fn draw(&self) {
+    pub fn draw(&self, controls: &Controls) {
+
+        // Model matrix : an identity matrix (model will be at the origin)
+        let model = std::default::Default::default();
+
+        let mvp = controls.projection.mul(&controls.view).mul(&model);
+
+
         unsafe {
             // Use our shader
             gl::UseProgram(self.program_id);
 
             // Send our transformation to the currently bound shader,
             // in the "MVP" uniform.
-            gl::UniformMatrix4fv(self.matrix_uniform_id, 1, gl::FALSE, self.mvp.as_ptr());
+            gl::UniformMatrix4fv(self.matrix_uniform_id, 1, gl::FALSE, mvp.as_ptr());
 
             gl::ActiveTexture(gl::TEXTURE0);
             gl::BindTexture(gl::TEXTURE_2D, self.texture_id);

@@ -6,6 +6,7 @@ use gl::types::{GLfloat, GLint, GLuint};
 use sdl2;
 
 use tutcommon;
+use tutcommon::matrix::{Matrix4f, Vector3f};
 
 // Our vertices. Tree consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
 // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
@@ -97,7 +98,7 @@ pub struct GLScene {
     texture_id : GLuint, // Texture id.
     matrix_uniform_id : GLint, // MVP uniform locaion.
     texture_uniform_id : GLint, // myTextureSampler uniform location.
-    mvp : tutcommon::Matrix4f, // Matrix 
+    mvp : Matrix4f, // Matrix 
 }
 
 impl GLScene {
@@ -127,13 +128,13 @@ impl GLScene {
         };
 
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-        let projection : tutcommon::Matrix4f = tutcommon::Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
+        let projection : Matrix4f = Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
         
         // Camera matrix        
-        let view = tutcommon::Matrix4f::look_at(
-            tutcommon::Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
-            tutcommon::Vector3f(0.0, 0.0, 0.0), // and looks at the origin
-            tutcommon::Vector3f(0.0, 1.0, 0.0) // Head is up (set to 0,-1,0 to look upside-down)
+        let view = Matrix4f::look_at(
+            &Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
+            &Vector3f(0.0, 0.0, 0.0), // and looks at the origin
+            &Vector3f(0.0, 1.0, 0.0) // Head is up (set to 0,-1,0 to look upside-down)
         );
 
         // Model matrix : an identity matrix (model will be at the origin)

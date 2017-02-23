@@ -7,6 +7,7 @@ use rand;
 use rand::Rng;
 
 use tutcommon;
+use tutcommon::matrix::{Matrix4f, Vector3f};
 
 // An array of 3 vectors which represents 3 vertices.
 static G_TRIANGLE_VERTEX_BUFFER_DATA : [GLfloat; 9] = [
@@ -73,8 +74,8 @@ pub struct GLScene {
     tri_color_buffer_id : GLuint,
     program_id : GLuint, //Shader program id.
     matrix_id : GLint, // MVP uniform locaion.
-    mvp : tutcommon::Matrix4f, // Matrix 
-    tri_mvp : tutcommon::Matrix4f, // Matrix
+    mvp : Matrix4f, // Matrix 
+    tri_mvp : Matrix4f, // Matrix
 }
 
 impl GLScene {
@@ -100,15 +101,15 @@ impl GLScene {
         };
 
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-        let projection : tutcommon::Matrix4f = tutcommon::Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
+        let projection : Matrix4f = Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
 
         println!("Projection matrix: {:?}", projection);
         
         // Camera matrix        
-        let view = tutcommon::Matrix4f::look_at(
-            tutcommon::Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
-            tutcommon::Vector3f(0.0, 0.0, 0.0), // and looks at the origin
-            tutcommon::Vector3f(0.0, 1.0, 0.0) // Head is up (set to 0,-1,0 to look upside-down)
+        let view = Matrix4f::look_at(
+            &Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
+            &Vector3f(0.0, 0.0, 0.0), // and looks at the origin
+            &Vector3f(0.0, 1.0, 0.0) // Head is up (set to 0,-1,0 to look upside-down)
         );
 
         println!("View matrix: {:?}", view);
@@ -121,7 +122,7 @@ impl GLScene {
         // Our ModelViewProjection : multiplication of our 3 matrices        
         let mvp = projection.mul(&view).mul(&model); // Remember, matrix multiplication is the other way around
 
-        let tri_model = tutcommon::Matrix4f::translate(tutcommon::Vector3f(1.5, 1.0, -0.5));
+        let tri_model = Matrix4f::translate(Vector3f(1.5, 1.0, -0.5));
         let tri_mvp = projection.mul(&view).mul(&tri_model);
 
         println!("MVP matrix: {:?}", mvp);
