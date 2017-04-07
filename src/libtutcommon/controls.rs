@@ -7,9 +7,10 @@ use sdl;
 
 use sdl2;
 use sdl2::mouse::MouseWheelDirection;
+use sdl2::keyboard::Scancode;
 
 use std::f32::consts::FRAC_PI_2;
-use std::ops::Add;
+use std::ops::{Add, Mul};
 
 #[doc = "Control stuff."]
 pub struct Controls {
@@ -38,7 +39,7 @@ impl Controls {
             horizontal_angle : FRAC_PI_2,
             vertical_angle : 0.,
             initial_fov : 45.0,
-            speed : 2.,
+            speed : 0.0005,
             mouse_speed : 0.0005,
             // sdl2::TimerSubsystem::ticks() is called only once, the first time this function is called
             last_time : ts.ticks(),
@@ -71,8 +72,8 @@ impl Controls {
         let xpos = mouse_state.x();
         let ypos = mouse_state.y();
         
-        self.horizontal_angle += self.mouse_speed * delta_time as f32 * xpos as f32;
-        self.vertical_angle += self.mouse_speed * delta_time as f32 * ypos as f32;
+        self.horizontal_angle -= self.mouse_speed * delta_time as f32 * xpos as f32;
+        self.vertical_angle -= self.mouse_speed * delta_time as f32 * ypos as f32;
 
         let direction = Vector3f(
             self.vertical_angle.cos() * self.horizontal_angle.sin(),
@@ -87,6 +88,20 @@ impl Controls {
         );
 
         let up = right.cross(&direction);
+
+        let keyboard_state = e.keyboard_state();
+        if keyboard_state.is_scancode_pressed(Scancode::Up) {
+            self.position = &self.position + &(&direction * (delta_time as f32 * self.speed));
+        }
+        if keyboard_state.is_scancode_pressed(Scancode::Down) {
+            self.position = &self.position - &(&direction * (delta_time as f32 * self.speed));
+        }
+        if keyboard_state.is_scancode_pressed(Scancode::Left) {
+            self.position = &self.position - &(&right * (delta_time as f32 * self.speed));
+        }
+        if keyboard_state.is_scancode_pressed(Scancode::Right) {
+            self.position = &self.position + &(&right * (delta_time as f32 * self.speed));
+        }
 
         // Projection matrix : 45&deg; Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
         self.projection = Matrix4f::perspective(self.initial_fov, 4. / 3., 0.1, 100.);

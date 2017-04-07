@@ -1,9 +1,10 @@
 
 #![doc = "Linear algebra"]
 
-use std::ops::{Add, Sub};
+use std::ops::{Add, Sub, Mul};
 
 #[doc = "Vector with 3 components (x,y,z)"]
+#[repr(C)]
 pub struct Vector3f (pub f32, pub f32, pub f32);
 
 impl Vector3f {
@@ -48,9 +49,22 @@ impl<'a, 'b> Sub<&'b Vector3f> for &'a Vector3f {
     }
 }
 
+impl<'a> Mul<f32> for &'a Vector3f {
+    type Output = Vector3f;
+
+    fn mul(self, _rhs:f32) -> Vector3f {
+        Vector3f (
+            self.0 * _rhs,
+            self.1 * _rhs,
+            self.2 * _rhs,
+        )
+    }
+}
+
 
 #[doc = "Matrix 4x4 to send into OpenGL."]
 #[derive(Debug)]
+#[repr(C)]
 pub struct Matrix4f {
     data : [[f32; 4]; 4], //column major order data[j][i] points to j-th column i-th row.
 }

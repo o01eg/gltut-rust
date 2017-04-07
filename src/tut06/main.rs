@@ -34,6 +34,8 @@ fn main() {
         gl::Enable(gl::DEPTH_TEST);
         // Accept fragment if it closer to the camera than the former one
         gl::DepthFunc(gl::LESS);
+        // Cull triangles which normal is not towards the camera
+        gl::Enable(gl::CULL_FACE);
     }
 
     // init scene.
