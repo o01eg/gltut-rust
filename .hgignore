@@ -1,1 +1,6 @@
 target
+syntax: glob
+**/*.bk
+**/*.orig
+**/.*.swp
+**/*.bak
