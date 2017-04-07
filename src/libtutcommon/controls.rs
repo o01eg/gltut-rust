@@ -29,6 +29,7 @@ pub struct Controls {
     mouse_speed : f32,
     last_time : u32,
     ts : sdl2::TimerSubsystem,
+    radius : f32,
 }
 
 impl Controls {
@@ -50,6 +51,7 @@ impl Controls {
                 &Vector3f(0.0, 0.0, 0.0), // and looks at the origin
                 &Vector3f(0.0, 1.0, 0.0) // Head is up (set to 0,-1,0 to look upside-down)
             ),
+            radius : 2.0,
         }
     }
 
@@ -72,42 +74,55 @@ impl Controls {
         let xpos = mouse_state.x();
         let ypos = mouse_state.y();
         
-        self.horizontal_angle -= self.mouse_speed * delta_time as f32 * xpos as f32;
-        self.vertical_angle -= self.mouse_speed * delta_time as f32 * ypos as f32;
+        self.horizontal_angle += self.mouse_speed * delta_time as f32 * xpos as f32;
+        self.vertical_angle += self.mouse_speed * delta_time as f32 * ypos as f32;
+        // restrict vertical angle
+        /*self.vertical_angle = if self.vertical_angle > 0.1f32 {
+            0.1f32
+        } else {
+            if self.vertical_angle < -0.1f32 {
+                -0.1f32
+            } else {
+                self.vertical_angle
+            }
+        };*/
 
         let direction = Vector3f(
-            self.vertical_angle.cos() * self.horizontal_angle.sin(),
-            self.vertical_angle.sin(),
-            self.vertical_angle.cos() * self.horizontal_angle.cos()
+            -self.vertical_angle.cos() * self.horizontal_angle.sin(),
+            -self.vertical_angle.sin(),
+            -self.vertical_angle.cos() * self.horizontal_angle.cos(),
         );
 
         let right = Vector3f(
             (self.horizontal_angle - FRAC_PI_2).sin(),
             0.,
-            (self.horizontal_angle - FRAC_PI_2).cos()
+            (self.horizontal_angle - FRAC_PI_2).cos(),
         );
 
         let up = right.cross(&direction);
 
         let keyboard_state = e.keyboard_state();
         if keyboard_state.is_scancode_pressed(Scancode::Up) {
-            self.position = &self.position + &(&direction * (delta_time as f32 * self.speed));
+            //self.position = &self.position + &(&direction * (delta_time as f32 * self.speed));
+            self.radius -= self.speed * delta_time as f32;
         }
         if keyboard_state.is_scancode_pressed(Scancode::Down) {
-            self.position = &self.position - &(&direction * (delta_time as f32 * self.speed));
+            //self.position = &self.position - &(&direction * (delta_time as f32 * self.speed));
+            self.radius += self.speed * delta_time as f32;
         }
-        if keyboard_state.is_scancode_pressed(Scancode::Left) {
+        /*if keyboard_state.is_scancode_pressed(Scancode::Left) {
             self.position = &self.position - &(&right * (delta_time as f32 * self.speed));
         }
         if keyboard_state.is_scancode_pressed(Scancode::Right) {
             self.position = &self.position + &(&right * (delta_time as f32 * self.speed));
-        }
+        }*/
+        self.position = &direction * (- self.radius);
 
         // Projection matrix : 45&deg; Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
         self.projection = Matrix4f::perspective(self.initial_fov, 4. / 3., 0.1, 100.);
 
         self.view = Matrix4f::look_at(&self.position, // Camera is here
-                                            &self.position.add(&direction), // and looks here : at the same position, plus "direction"
+                                            &Vector3f(0.0, 0.0, 0.0), // and looks here : at the same position, plus "direction"
                                             &up); // Head is up (set to 0,-1,0 to look upside-down)
     }
 }
