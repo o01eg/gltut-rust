@@ -23,3 +23,4 @@ pub mod controls;
 
 pub mod matrix;
 
+pub mod objloader;

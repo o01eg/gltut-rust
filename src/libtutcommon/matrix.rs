@@ -5,7 +5,7 @@ use std::ops::{Add, Sub, Mul};
 
 #[doc = "Vector with 3 components (x,y,z)"]
 #[repr(C)]
-pub struct Vector3f (pub f32, pub f32, pub f32);
+pub struct Vector3f(pub f32, pub f32, pub f32);
 
 impl Vector3f {
     #[doc = "Normalize vector to length 1."]
@@ -16,48 +16,34 @@ impl Vector3f {
     }
 
     #[doc = "Cross product."]
-    pub fn cross(&self, _rhs:&Vector3f) -> Vector3f {
-        Vector3f (
-            self.1 * _rhs.2 - self.2 * _rhs.1,
-            self.2 * _rhs.0 - self.0 * _rhs.2,
-            self.0 * _rhs.1 - self.1 * _rhs.0,
-        )
+    pub fn cross(&self, _rhs: &Vector3f) -> Vector3f {
+        Vector3f(self.1 * _rhs.2 - self.2 * _rhs.1,
+                 self.2 * _rhs.0 - self.0 * _rhs.2,
+                 self.0 * _rhs.1 - self.1 * _rhs.0)
     }
 }
 
 impl<'a, 'b> Add<&'b Vector3f> for &'a Vector3f {
     type Output = Vector3f;
 
-    fn add(self, _rhs:&'b Vector3f) -> Vector3f {
-        Vector3f (
-            self.0 + _rhs.0,
-            self.1 + _rhs.1,
-            self.2 + _rhs.2,
-        )
+    fn add(self, _rhs: &'b Vector3f) -> Vector3f {
+        Vector3f(self.0 + _rhs.0, self.1 + _rhs.1, self.2 + _rhs.2)
     }
 }
 
 impl<'a, 'b> Sub<&'b Vector3f> for &'a Vector3f {
     type Output = Vector3f;
 
-    fn sub(self, _rhs:&'b Vector3f) -> Vector3f {
-        Vector3f (
-            self.0 - _rhs.0,
-            self.1 - _rhs.1,
-            self.2 - _rhs.2,
-        )
+    fn sub(self, _rhs: &'b Vector3f) -> Vector3f {
+        Vector3f(self.0 - _rhs.0, self.1 - _rhs.1, self.2 - _rhs.2)
     }
 }
 
 impl<'a> Mul<f32> for &'a Vector3f {
     type Output = Vector3f;
 
-    fn mul(self, _rhs:f32) -> Vector3f {
-        Vector3f (
-            self.0 * _rhs,
-            self.1 * _rhs,
-            self.2 * _rhs,
-        )
+    fn mul(self, _rhs: f32) -> Vector3f {
+        Vector3f(self.0 * _rhs, self.1 * _rhs, self.2 * _rhs)
     }
 }
 
@@ -66,25 +52,25 @@ impl<'a> Mul<f32> for &'a Vector3f {
 #[derive(Debug)]
 #[repr(C)]
 pub struct Matrix4f {
-    data : [[f32; 4]; 4], //column major order data[j][i] points to j-th column i-th row.
+    data: [[f32; 4]; 4], //column major order data[j][i] points to j-th column i-th row.
 }
 
 impl Matrix4f {
     #[doc = "Get raw data for OpenGL."]
-    pub fn as_ptr(&self) -> * const f32 {
+    pub fn as_ptr(&self) -> *const f32 {
         self.data[0].as_ptr()
     }
 
     #[doc = "Get perspective projection matrix."]
     pub fn perspective(fov: f32, aspect: f32, znear: f32, zfar: f32) -> Matrix4f {
-        let mut res : Matrix4f = Default::default();
+        let mut res: Matrix4f = Default::default();
 
-        let f = 1.0 / (fov / 2.0 ).to_radians().tan();
+        let f = 1.0 / (fov / 2.0).to_radians().tan();
 
         res.data[0][0] = f / aspect;
         res.data[1][1] = f;
         res.data[2][2] = (zfar + znear) / (znear - zfar);
-        res.data[2][3] = - 1.0;
+        res.data[2][3] = -1.0;
         res.data[3][2] = 2.0 * zfar * znear / (znear - zfar);
         res.data[3][3] = 0.0;
 
@@ -93,26 +79,26 @@ impl Matrix4f {
 
     #[doc = "Get orthographic projection matrix."]
     pub fn ortho(left: f32, right: f32, bottom: f32, top: f32, znear: f32, zfar: f32) -> Matrix4f {
-        let mut res : Matrix4f = Default::default();
+        let mut res: Matrix4f = Default::default();
 
         res.data[0][0] = 2.0 / (right - left);
         res.data[1][1] = 2.0 / (top - bottom);
         res.data[2][2] = -2.0 / (zfar - znear);
-        res.data[3][0] = - (right + left) / (right - left);
-        res.data[3][1] = - (top + bottom) / (top - bottom);
-        res.data[3][2] = - (zfar + znear) / (zfar - znear);
+        res.data[3][0] = -(right + left) / (right - left);
+        res.data[3][1] = -(top + bottom) / (top - bottom);
+        res.data[3][2] = -(zfar + znear) / (zfar - znear);
 
         res
     }
 
     #[doc = "Generate matrix for camera."]
-    pub fn look_at(eye:&Vector3f, center:&Vector3f, up:&Vector3f) -> Matrix4f {
+    pub fn look_at(eye: &Vector3f, center: &Vector3f, up: &Vector3f) -> Matrix4f {
         let f = (center - eye).normalize();
         let up1 = up.normalize();
         let s = f.cross(&up1).normalize();
         let u = s.cross(&f);
 
-        let mut m : Matrix4f = Default::default();
+        let mut m: Matrix4f = Default::default();
         m.data[0][0] = s.0;
         m.data[1][0] = s.1;
         m.data[2][0] = s.2;
@@ -125,7 +111,7 @@ impl Matrix4f {
         m.data[1][2] = -f.1;
         m.data[2][2] = -f.2;
 
-        let mut t : Matrix4f = Default::default();
+        let mut t: Matrix4f = Default::default();
 
         t.data[3][0] = -eye.0;
         t.data[3][1] = -eye.1;
@@ -135,8 +121,8 @@ impl Matrix4f {
     }
 
     #[doc = "Generate translation matrix."]
-    pub fn translate(t:Vector3f) -> Matrix4f {
-        let mut res : Matrix4f = Default::default();
+    pub fn translate(t: Vector3f) -> Matrix4f {
+        let mut res: Matrix4f = Default::default();
 
         res.data[3][0] = t.0;
         res.data[3][1] = t.1;
@@ -146,8 +132,8 @@ impl Matrix4f {
     }
 
     #[doc = "Generate translation matrix."]
-    pub fn scale(s:Vector3f) -> Matrix4f {
-        let mut res : Matrix4f = Default::default();
+    pub fn scale(s: Vector3f) -> Matrix4f {
+        let mut res: Matrix4f = Default::default();
 
         res.data[0][0] = s.0;
         res.data[1][1] = s.1;
@@ -157,8 +143,8 @@ impl Matrix4f {
     }
 
     #[doc = "Generate rotate matrix."]
-    pub fn rotate(angle:f32, axis:Vector3f) -> Matrix4f {
-        let mut res : Matrix4f = Default::default();
+    pub fn rotate(angle: f32, axis: Vector3f) -> Matrix4f {
+        let mut res: Matrix4f = Default::default();
 
         let a = (angle / 2.0).to_radians().sin();
         let vn = axis.normalize();
@@ -195,10 +181,12 @@ impl Matrix4f {
 
     #[doc = "Matrix multiplication."]
     pub fn mul(&self, _rhs: &Matrix4f) -> Matrix4f {
-        let mut res : Matrix4f = Default::default();
+        let mut res: Matrix4f = Default::default();
 
-        for i in 0..4 { // row
-            for j in 0..4 { // column
+        for i in 0..4 {
+            // row
+            for j in 0..4 {
+                // column
                 let mut sum = 0.0;
                 for k in 0..4 {
                     sum += self.data[k][i] * _rhs.data[j][k];
@@ -213,12 +201,11 @@ impl Matrix4f {
 
 impl Default for Matrix4f {
     fn default() -> Matrix4f {
-        Matrix4f { data : [
-            [1.0, 0.0, 0.0, 0.0,],
-            [0.0, 1.0, 0.0, 0.0,],
-            [0.0, 0.0, 1.0, 0.0,],
-            [0.0, 0.0, 0.0, 1.0,],
-        ] }
+        Matrix4f {
+            data: [[1.0, 0.0, 0.0, 0.0],
+                   [0.0, 1.0, 0.0, 0.0],
+                   [0.0, 0.0, 1.0, 0.0],
+                   [0.0, 0.0, 0.0, 1.0]],
+        }
     }
 }
-

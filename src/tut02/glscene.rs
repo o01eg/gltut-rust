@@ -3,29 +3,24 @@ use std;
 use gl;
 use gl::types::{GLfloat, GLuint};
 
-use tutcommon;
+use tutcommon::glutils;
 
 // An array of 3 vectors which represents 3 vertices.
-static G_VERTEX_BUFFER_DATA : [GLfloat; 9] = [
-    -1.0, -1.0, 0.0,
-    1.0, -1.0, 0.0,
-    0.0, 1.0, 0.0
-];
+static G_VERTEX_BUFFER_DATA: [GLfloat; 9] = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0];
 
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
 pub struct GLScene {
-    vertex_array_id : GLuint, //VAO id.
-    vertex_buffer_id : GLuint, //VBO id.
-    program_id : GLuint, //Shader program id.
+    vertex_array_id: GLuint, //VAO id.
+    vertex_buffer_id: GLuint, //VBO id.
+    program_id: GLuint, //Shader program id.
 }
 
 impl GLScene {
-
     #[doc = "Create scene and init it."]
     pub fn new() -> GLScene {
 
         let mut vertex_array_id = 0;
-        
+
         unsafe {
             // create Vertex Array Object and set it as the current one:
             gl::GenVertexArrays(1, &mut vertex_array_id);
@@ -33,8 +28,8 @@ impl GLScene {
         }
 
         // Create and compile our GLSL program from the shaders
-        let program_id = tutcommon::glutils::load_program("data/tut02/SimpleVertexShader.vertexshader"
-            , "data/tut02/SimpleFragmentShader.fragmentshader");
+        let program_id = glutils::load_program("data/tut02/SimpleVertexShader.vertexshader",
+                                               "data/tut02/SimpleFragmentShader.fragmentshader");
 
         let mut vertex_buffer_id = 0;
 
@@ -46,15 +41,17 @@ impl GLScene {
             gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buffer_id);
 
             // Send vertices to buffer.
-            gl::BufferData(gl::ARRAY_BUFFER
-                , std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize
-                , std::mem::transmute(&G_VERTEX_BUFFER_DATA)
-                , gl::STATIC_DRAW);
+            gl::BufferData(gl::ARRAY_BUFFER,
+                           std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
+                           std::mem::transmute(&G_VERTEX_BUFFER_DATA),
+                           gl::STATIC_DRAW);
         }
-        
-        GLScene { vertex_array_id : vertex_array_id
-            , vertex_buffer_id : vertex_buffer_id
-            , program_id : program_id }
+
+        GLScene {
+            vertex_array_id: vertex_array_id,
+            vertex_buffer_id: vertex_buffer_id,
+            program_id: program_id,
+        }
     }
 
     #[doc = "Render scene each frame."]
@@ -65,7 +62,9 @@ impl GLScene {
             gl::EnableVertexAttribArray(0);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_buffer_id);
             gl::VertexAttribPointer(
-                0, // attribute 0. No particular reason for 0, but must match the layout in the shader.
+                // attribute 0. No particular reason for 0, but must match the layout in the
+                // shader.
+                0,
                 3, // size
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
@@ -97,4 +96,3 @@ impl Drop for GLScene {
         }
     }
 }
-

@@ -5,13 +5,14 @@ use gl::types::{GLfloat, GLint, GLuint};
 
 use sdl2;
 
-use tutcommon;
+use tutcommon::glutils;
 use tutcommon::matrix::{Matrix4f, Vector3f};
 use tutcommon::controls::Controls;
 
-// Our vertices. Tree consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
+// Our vertices. Tree consecutive floats give a 3D vertex;
+// Three consecutive vertices give a triangle.
 // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-static G_VERTEX_BUFFER_DATA : [GLfloat; 12*3*3] = [
+static G_VERTEX_BUFFER_DATA: [GLfloat; 12 * 3 * 3] = [
     -1.0,-1.0,-1.0, // triangle 1 : begin
     -1.0,-1.0, 1.0,
     -1.0, 1.0, 1.0, // triangle 1 : end
@@ -50,64 +51,35 @@ static G_VERTEX_BUFFER_DATA : [GLfloat; 12*3*3] = [
     1.0,-1.0, 1.0
 ];
 
-// Two UV coordinatesfor each vertex. They were created with Blender. You'll learn shortly how to do this yourself.
-static G_UV_BUFFER_DATA : [GLfloat; 12*3*2] = [
-    0.000059, 0.000004,
-    0.000103, 0.336048,
-    0.335973, 0.335903,
-    1.000023, 0.000013,
-    0.667979, 0.335851,
-    0.999958, 0.336064,
-    0.667979, 0.335851,
-    0.336024, 0.671877,
-    0.667969, 0.671889,
-    1.000023, 0.000013,
-    0.668104, 0.000013,
-    0.667979, 0.335851,
-    0.000059, 0.000004,
-    0.335973, 0.335903,
-    0.336098, 0.000071,
-    0.667979, 0.335851,
-    0.335973, 0.335903,
-    0.336024, 0.671877,
-    1.000004, 0.671847,
-    0.999958, 0.336064,
-    0.667979, 0.335851,
-    0.668104, 0.000013,
-    0.335973, 0.335903,
-    0.667979, 0.335851,
-    0.335973, 0.335903,
-    0.668104, 0.000013,
-    0.336098, 0.000071,
-    0.000103, 0.336048,
-    0.000004, 0.671870,
-    0.336024, 0.671877,
-    0.000103, 0.336048,
-    0.336024, 0.671877,
-    0.335973, 0.335903,
-    0.667969, 0.671889,
-    1.000004, 0.671847,
-    0.667979, 0.335851
-];
+// Two UV coordinatesfor each vertex.
+// They were created with Blender. You'll learn shortly how to do this yourself.
+static G_UV_BUFFER_DATA: [GLfloat; 12 * 3 * 2] =
+    [0.000059, 0.000004, 0.000103, 0.336048, 0.335973, 0.335903, 1.000023, 0.000013, 0.667979,
+     0.335851, 0.999958, 0.336064, 0.667979, 0.335851, 0.336024, 0.671877, 0.667969, 0.671889,
+     1.000023, 0.000013, 0.668104, 0.000013, 0.667979, 0.335851, 0.000059, 0.000004, 0.335973,
+     0.335903, 0.336098, 0.000071, 0.667979, 0.335851, 0.335973, 0.335903, 0.336024, 0.671877,
+     1.000004, 0.671847, 0.999958, 0.336064, 0.667979, 0.335851, 0.668104, 0.000013, 0.335973,
+     0.335903, 0.667979, 0.335851, 0.335973, 0.335903, 0.668104, 0.000013, 0.336098, 0.000071,
+     0.000103, 0.336048, 0.000004, 0.671870, 0.336024, 0.671877, 0.000103, 0.336048, 0.336024,
+     0.671877, 0.335973, 0.335903, 0.667969, 0.671889, 1.000004, 0.671847, 0.667979, 0.335851];
 
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
 pub struct GLScene {
-    vertex_array_id : GLuint, //VAO id.
-    vertex_buffer_id : GLuint, //VBO id.
-    uv_buffer_id : GLuint, // UV id.
-    program_id : GLuint, //Shader program id.
-    texture_id : GLuint, // Texture id.
-    matrix_uniform_id : GLint, // MVP uniform locaion.
-    texture_uniform_id : GLint, // myTextureSampler uniform location.
+    vertex_array_id: GLuint, //VAO id.
+    vertex_buffer_id: GLuint, //VBO id.
+    uv_buffer_id: GLuint, // UV id.
+    program_id: GLuint, //Shader program id.
+    texture_id: GLuint, // Texture id.
+    matrix_uniform_id: GLint, // MVP uniform locaion.
+    texture_uniform_id: GLint, // myTextureSampler uniform location.
 }
 
 impl GLScene {
-
     #[doc = "Create scene and init it."]
-    pub fn new(vs : sdl2::VideoSubsystem) -> GLScene {
+    pub fn new(vs: sdl2::VideoSubsystem) -> GLScene {
 
         let mut vertex_array_id = 0;
-        
+
         unsafe {
             // create Vertex Array Object and set it as the current one:
             gl::GenVertexArrays(1, &mut vertex_array_id);
@@ -115,20 +87,20 @@ impl GLScene {
         }
 
         // Create and compile our GLSL program from the shaders
-        let program_id = tutcommon::glutils::load_program("data/tut06/TransformVertexShader.vertexshader"
-            , "data/tut06/TextureFragmentShader.fragmentshader");
+        let program_id = glutils::load_program("data/tut06/TransformVertexShader.vertexshader",
+                                               "data/tut06/TextureFragmentShader.fragmentshader");
 
         let matrix_uniform_id = unsafe {
-            // Get a handle for our "MVP" uniform 
-            gl::GetUniformLocation(program_id, "MVP\x00".as_ptr() as * const i8)
+            // Get a handle for our "MVP" uniform
+            gl::GetUniformLocation(program_id, "MVP\x00".as_ptr() as *const i8)
         };
 
         let texture_uniform_id = unsafe {
-            gl::GetUniformLocation(program_id, "myTextureSampler\x00".as_ptr() as * const i8)
+            gl::GetUniformLocation(program_id, "myTextureSampler\x00".as_ptr() as *const i8)
         };
-               
+
         let mut vertex_buffer_id = 0;
-        
+
         unsafe {
             // Generate 1 buffer.
             gl::GenBuffers(1, &mut vertex_buffer_id);
@@ -137,10 +109,10 @@ impl GLScene {
             gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buffer_id);
 
             // Send vertices to buffer.
-            gl::BufferData(gl::ARRAY_BUFFER
-                , std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize
-                , std::mem::transmute(&G_VERTEX_BUFFER_DATA)
-                , gl::STATIC_DRAW);
+            gl::BufferData(gl::ARRAY_BUFFER,
+                           std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
+                           std::mem::transmute(&G_VERTEX_BUFFER_DATA),
+                           gl::STATIC_DRAW);
         }
 
         let mut uv_buffer_id = 0;
@@ -148,27 +120,27 @@ impl GLScene {
         unsafe {
             gl::GenBuffers(1, &mut uv_buffer_id);
             gl::BindBuffer(gl::ARRAY_BUFFER, uv_buffer_id);
-            gl::BufferData(gl::ARRAY_BUFFER
-                , std::mem::size_of_val(&G_UV_BUFFER_DATA) as isize
-                , std::mem::transmute(&G_UV_BUFFER_DATA)
-                , gl::STATIC_DRAW);
+            gl::BufferData(gl::ARRAY_BUFFER,
+                           std::mem::size_of_val(&G_UV_BUFFER_DATA) as isize,
+                           std::mem::transmute(&G_UV_BUFFER_DATA),
+                           gl::STATIC_DRAW);
         }
 
-        let texture_id = tutcommon::glutils::load_dds_texture(&vs, "data/tut06/uvtemplate.DDS").unwrap();
+        let texture_id = glutils::load_dds_texture(&vs, "data/tut06/uvtemplate.DDS").unwrap();
 
-        GLScene { vertex_array_id : vertex_array_id
-            , vertex_buffer_id : vertex_buffer_id
-            , uv_buffer_id : uv_buffer_id
-            , texture_id : texture_id
-            , program_id : program_id
-            , matrix_uniform_id : matrix_uniform_id
-            , texture_uniform_id : texture_uniform_id
+        GLScene {
+            vertex_array_id: vertex_array_id,
+            vertex_buffer_id: vertex_buffer_id,
+            uv_buffer_id: uv_buffer_id,
+            texture_id: texture_id,
+            program_id: program_id,
+            matrix_uniform_id: matrix_uniform_id,
+            texture_uniform_id: texture_uniform_id,
         }
     }
 
     #[doc = "Update data each frame."]
-    pub fn update(&mut self) {
-    }
+    pub fn update(&mut self) {}
 
     #[doc = "Render scene each frame."]
     pub fn draw(&self, controls: &Controls) {
@@ -196,7 +168,9 @@ impl GLScene {
             gl::EnableVertexAttribArray(0);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_buffer_id);
             gl::VertexAttribPointer(
-                0, // attribute 0. No particular reason for 0, but must match the layout in the shader.
+                // attribute 0. No particular reason for 0, but must match the layout in the
+                // shader.
+                0,
                 3, // size
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
@@ -208,7 +182,7 @@ impl GLScene {
             gl::EnableVertexAttribArray(1);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.uv_buffer_id);
             gl::VertexAttribPointer(
-                1, // attribute 1. No particular reason for 1, but must match the layout in the shader.
+                1, // attribute 1.
                 2, // size
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
@@ -218,7 +192,7 @@ impl GLScene {
 
             // Draw the triangle!
             // 12*3 indices starting at 0 -> 12 triangles -> 6 squares
-            gl::DrawArrays(gl::TRIANGLES, 0, 12*3);
+            gl::DrawArrays(gl::TRIANGLES, 0, 12 * 3);
 
             gl::DisableVertexAttribArray(0);
             gl::DisableVertexAttribArray(1);
@@ -241,4 +215,3 @@ impl Drop for GLScene {
         }
     }
 }
-

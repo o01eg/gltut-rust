@@ -42,36 +42,32 @@ fn main() {
     let mut scene = glscene::GLScene::new(sdl_context.vs);
     let mut controls = tutcommon::controls::Controls::new(sdl_context.ts);
 
-    'evloop : loop {
+    'evloop: loop {
         for event in sdl_context.event_pump.poll_iter() {
             // check if ESC key pressed or windows closed.
             match event {
                 sdl2::event::Event::Quit { .. } => {
                     return;
                 }
-                sdl2::event::Event::KeyDown { 
-                    timestamp: _,
-                    window_id: _,
-                    keycode: _,
-                    scancode,
-                    keymod: _,
-                    repeat: _, 
-                    } => {
+                sdl2::event::Event::KeyDown { timestamp: _,
+                                              window_id: _,
+                                              keycode: _,
+                                              scancode,
+                                              keymod: _,
+                                              repeat: _ } => {
                     if scancode == Some(sdl2::keyboard::Scancode::Escape) {
                         return;
                     }
                 }
-                sdl2::event::Event::MouseWheel {
-                    timestamp: _,
-                    window_id: _,
-                    which: _,
-                    x,
-                    y,
-                    direction,
-                } => {
+                sdl2::event::Event::MouseWheel { timestamp: _,
+                                                 window_id: _,
+                                                 which: _,
+                                                 x,
+                                                 y,
+                                                 direction } => {
                     controls.process_wheel(x, y, direction)
                 }
-                _ => ()
+                _ => (),
             }
         }
 
@@ -89,4 +85,3 @@ fn main() {
 
     }
 }
-

@@ -20,7 +20,7 @@ fn main() {
 
     let mut sdl_context = sdl::SdlContext::init("Tutorial 01");
 
-    'evloop : loop {
+    'evloop: loop {
         // Draw nothing. Next in tutorial 2.
 
         // Swap buffers.
@@ -32,21 +32,18 @@ fn main() {
                 sdl2::event::Event::Quit { .. } => {
                     return;
                 }
-                sdl2::event::Event::KeyDown { 
-                            timestamp: _,
-                            window_id: _,
-                            keycode: _,
-                            scancode,
-                            keymod: _,
-                            repeat: _, 
-                        } => {
+                sdl2::event::Event::KeyDown { timestamp: _,
+                                              window_id: _,
+                                              keycode: _,
+                                              scancode,
+                                              keymod: _,
+                                              repeat: _ } => {
                     if scancode == Some(sdl2::keyboard::Scancode::Escape) {
                         return;
                     }
                 }
-                _ => ()
+                _ => (),
             }
         }
     }
 }
-
