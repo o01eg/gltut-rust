@@ -4,7 +4,8 @@
 use std::ops::{Add, Sub, Mul};
 
 #[doc = "Vector with 3 components (x,y,z)"]
-#[repr(C)]
+#[repr(C, packed)]
+#[derive(Clone, Debug)]
 pub struct Vector3f(pub f32, pub f32, pub f32);
 
 impl Vector3f {

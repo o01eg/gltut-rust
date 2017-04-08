@@ -143,8 +143,7 @@ impl GLScene {
                            gl::STATIC_DRAW);
         }
 
-        let texture_id = tutcommon::glutils::load_dds_texture(&vs, "data/tut05/uvtemplate.DDS")
-            .unwrap();
+        let texture_id = glutils::load_dds_texture(&vs, "data/tut05/uvtemplate.DDS").unwrap();
 
         GLScene {
             vertex_array_id: vertex_array_id,

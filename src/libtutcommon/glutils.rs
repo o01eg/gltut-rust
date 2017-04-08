@@ -19,7 +19,7 @@ const FOURCC_DXT5: u32 = 0x35545844; // Equivalent to "DXT5" in ASCII
 
 fn read_source_from_file<P: AsRef<Path>>(path: P) -> CString {
     let mut res = String::new();
-    File::open(path).unwrap().read_to_string(&mut res).unwrap();
+    File::open(path).expect("Open file").read_to_string(&mut res).expect("Read file");
     return CString::new(res).unwrap();
 }
 

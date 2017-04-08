@@ -8,60 +8,8 @@ use sdl2;
 use tutcommon::glutils;
 use tutcommon::matrix::{Matrix4f, Vector3f};
 use tutcommon::controls::Controls;
-
-// Our vertices. Tree consecutive floats give a 3D vertex;
-// Three consecutive vertices give a triangle.
-// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-static G_VERTEX_BUFFER_DATA: [GLfloat; 12 * 3 * 3] = [
-    -1.0,-1.0,-1.0, // triangle 1 : begin
-    -1.0,-1.0, 1.0,
-    -1.0, 1.0, 1.0, // triangle 1 : end
-    1.0, 1.0,-1.0, // triangle 2 : begin
-    -1.0,-1.0,-1.0,
-    -1.0, 1.0,-1.0, // triangle 2 : end
-    1.0,-1.0, 1.0,
-    -1.0,-1.0,-1.0,
-    1.0,-1.0,-1.0,
-    1.0, 1.0,-1.0,
-    1.0,-1.0,-1.0,
-    -1.0,-1.0,-1.0,
-    -1.0,-1.0,-1.0,
-    -1.0, 1.0, 1.0,
-    -1.0, 1.0,-1.0,
-    1.0,-1.0, 1.0,
-    -1.0,-1.0, 1.0,
-    -1.0,-1.0,-1.0,
-    -1.0, 1.0, 1.0,
-    -1.0,-1.0, 1.0,
-    1.0,-1.0, 1.0,
-    1.0, 1.0, 1.0,
-    1.0,-1.0,-1.0,
-    1.0, 1.0,-1.0,
-    1.0,-1.0,-1.0,
-    1.0, 1.0, 1.0,
-    1.0,-1.0, 1.0,
-    1.0, 1.0, 1.0,
-    1.0, 1.0,-1.0,
-    -1.0, 1.0,-1.0,
-    1.0, 1.0, 1.0,
-    -1.0, 1.0,-1.0,
-    -1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0,
-    -1.0, 1.0, 1.0,
-    1.0,-1.0, 1.0
-];
-
-// Two UV coordinatesfor each vertex.
-// They were created with Blender. You'll learn shortly how to do this yourself.
-static G_UV_BUFFER_DATA: [GLfloat; 12 * 3 * 2] =
-    [0.000059, 0.000004, 0.000103, 0.336048, 0.335973, 0.335903, 1.000023, 0.000013, 0.667979,
-     0.335851, 0.999958, 0.336064, 0.667979, 0.335851, 0.336024, 0.671877, 0.667969, 0.671889,
-     1.000023, 0.000013, 0.668104, 0.000013, 0.667979, 0.335851, 0.000059, 0.000004, 0.335973,
-     0.335903, 0.336098, 0.000071, 0.667979, 0.335851, 0.335973, 0.335903, 0.336024, 0.671877,
-     1.000004, 0.671847, 0.999958, 0.336064, 0.667979, 0.335851, 0.668104, 0.000013, 0.335973,
-     0.335903, 0.667979, 0.335851, 0.335973, 0.335903, 0.668104, 0.000013, 0.336098, 0.000071,
-     0.000103, 0.336048, 0.000004, 0.671870, 0.336024, 0.671877, 0.000103, 0.336048, 0.336024,
-     0.671877, 0.335973, 0.335903, 0.667969, 0.671889, 1.000004, 0.671847, 0.667979, 0.335851];
+use tutcommon::objloader;
+use tutcommon::objloader::Vector2f;
 
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
 pub struct GLScene {
@@ -90,6 +38,20 @@ impl GLScene {
         let program_id = glutils::load_program("data/tut07/TransformVertexShader.vertexshader",
                                                "data/tut07/TextureFragmentShader.fragmentshader");
 
+        let mut vertices = Vec::new();
+        let mut uvs = Vec::new();
+        let mut normals = Vec::new();
+
+        objloader::obj_load("data/tut07/cube.obj"
+                            , &mut vertices
+                            , &mut uvs
+                            , &mut normals).expect("Load obj");
+        println!("UV len: {}", uvs.len());
+        println!("UV elem size: {}", std::mem::size_of::<Vector2f>());
+
+        println!("Vertex len: {}", vertices.len());
+        println!("Vertex elem size: {}", std::mem::size_of::<Vector3f>());
+
         let matrix_uniform_id = unsafe {
             // Get a handle for our "MVP" uniform
             gl::GetUniformLocation(program_id, "MVP\x00".as_ptr() as *const i8)
@@ -110,8 +72,8 @@ impl GLScene {
 
             // Send vertices to buffer.
             gl::BufferData(gl::ARRAY_BUFFER,
-                           std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
-                           std::mem::transmute(&G_VERTEX_BUFFER_DATA),
+                           (std::mem::size_of::<Vector3f>() * vertices.len()) as isize,
+                           std::mem::transmute(vertices.as_ptr()),
                            gl::STATIC_DRAW);
         }
 
@@ -121,8 +83,8 @@ impl GLScene {
             gl::GenBuffers(1, &mut uv_buffer_id);
             gl::BindBuffer(gl::ARRAY_BUFFER, uv_buffer_id);
             gl::BufferData(gl::ARRAY_BUFFER,
-                           std::mem::size_of_val(&G_UV_BUFFER_DATA) as isize,
-                           std::mem::transmute(&G_UV_BUFFER_DATA),
+                           (std::mem::size_of::<Vector2f>() * uvs.len()) as isize,
+                           std::mem::transmute(uvs.as_ptr()),
                            gl::STATIC_DRAW);
         }
 
