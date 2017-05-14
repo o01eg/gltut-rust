@@ -1,7 +1,7 @@
 use std;
 
 use gl;
-use gl::types::{GLfloat, GLint, GLuint};
+use gl::types::{GLfloat, GLint, GLuint, GLvoid};
 
 use rand;
 use rand::Rng;
@@ -60,6 +60,7 @@ static G_VERTEX_BUFFER_DATA: [GLfloat; 12 * 3 * 3] = [
 ];
 
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
+#[derive(Default)]
 pub struct GLScene {
     vertex_array_id: GLuint, //VAO id.
     vertex_buffer_id: GLuint, //VBO id.
@@ -135,7 +136,7 @@ impl GLScene {
             // Send vertices to buffer.
             gl::BufferData(gl::ARRAY_BUFFER,
                            std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
-                           std::mem::transmute(&G_VERTEX_BUFFER_DATA),
+                           &G_VERTEX_BUFFER_DATA as *const [f32; 12 * 3 * 3] as *const GLvoid,
                            gl::STATIC_DRAW);
         }
 
@@ -149,7 +150,7 @@ impl GLScene {
             // Send vertices to buffer.
             gl::BufferData(gl::ARRAY_BUFFER,
                            std::mem::size_of_val(&G_TRIANGLE_VERTEX_BUFFER_DATA) as isize,
-                           std::mem::transmute(&G_TRIANGLE_VERTEX_BUFFER_DATA),
+                           &G_TRIANGLE_VERTEX_BUFFER_DATA as *const [f32; 9] as *const GLvoid,
                            gl::STATIC_DRAW);
         }
 
@@ -175,7 +176,7 @@ impl GLScene {
             gl::BindBuffer(gl::ARRAY_BUFFER, tri_color_buffer_id);
             gl::BufferData(gl::ARRAY_BUFFER,
                            std::mem::size_of_val(&G_TRIANGLE_COLOR_BUFFER_DATA) as isize,
-                           std::mem::transmute(&G_TRIANGLE_COLOR_BUFFER_DATA),
+                           &G_TRIANGLE_COLOR_BUFFER_DATA as *const [f32; 9] as *const GLvoid,
                            gl::STATIC_DRAW);
         }
 

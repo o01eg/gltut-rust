@@ -1,12 +1,12 @@
 use std;
 
 use gl;
-use gl::types::{GLfloat, GLint, GLuint};
+use gl::types::{GLint, GLuint};
 
 use sdl2;
 
 use tutcommon::glutils;
-use tutcommon::matrix::{Matrix4f, Vector3f};
+use tutcommon::matrix::Vector3f;
 use tutcommon::controls::Controls;
 use tutcommon::objloader;
 use tutcommon::objloader::Vector2f;

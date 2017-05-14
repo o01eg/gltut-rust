@@ -37,7 +37,7 @@ fn main() {
     // init scene.
     let mut scene = glscene::GLScene::new(sdl_context.vs);
 
-    'evloop: loop {
+    loop {
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         }
@@ -55,12 +55,7 @@ fn main() {
                 sdl2::event::Event::Quit { .. } => {
                     return;
                 }
-                sdl2::event::Event::KeyDown { timestamp: _,
-                                              window_id: _,
-                                              keycode: _,
-                                              scancode,
-                                              keymod: _,
-                                              repeat: _ } => {
+                sdl2::event::Event::KeyDown { scancode, .. } => {
                     if scancode == Some(sdl2::keyboard::Scancode::Escape) {
                         return;
                     }

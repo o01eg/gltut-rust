@@ -3,14 +3,11 @@
 
 use matrix::{Vector3f, Matrix4f};
 
-use sdl;
-
 use sdl2;
 use sdl2::mouse::MouseWheelDirection;
 use sdl2::keyboard::Scancode;
 
 use std::f32::consts::FRAC_PI_2;
-use std::ops::{Add, Mul};
 
 #[doc = "Control stuff."]
 pub struct Controls {
@@ -56,7 +53,7 @@ impl Controls {
     }
 
     #[doc = "Mouse wheel handler"]
-    pub fn process_wheel(&mut self, x: i32, y: i32, direction: MouseWheelDirection) {
+    pub fn process_wheel(&mut self, _x: i32, y: i32, _direction: MouseWheelDirection) {
         self.initial_fov -= y as f32 * 5f32;
     }
 

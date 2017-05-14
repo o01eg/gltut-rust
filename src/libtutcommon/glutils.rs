@@ -19,8 +19,11 @@ const FOURCC_DXT5: u32 = 0x35545844; // Equivalent to "DXT5" in ASCII
 
 fn read_source_from_file<P: AsRef<Path>>(path: P) -> CString {
     let mut res = String::new();
-    File::open(path).expect("Open file").read_to_string(&mut res).expect("Read file");
-    return CString::new(res).unwrap();
+    File::open(path)
+        .expect("Open file")
+        .read_to_string(&mut res)
+        .expect("Read file");
+    CString::new(res).unwrap()
 }
 
 #[doc = "Read shaders from file and build program."]
@@ -80,7 +83,7 @@ fn compile_and_check_shader(shader_id: GLuint, shader_source: &CStr) {
         // Compile Shader
         gl::ShaderSource(shader_id,
                          1,
-                         std::mem::transmute::<&&[i8], *const *const i8>(&source),
+                         &source as *const &[i8] as *const *const i8,
                          std::ptr::null());
         gl::CompileShader(shader_id);
 
@@ -99,7 +102,7 @@ fn compile_and_check_shader(shader_id: GLuint, shader_source: &CStr) {
 }
 
 fn load_bmp<S: AsRef<OsStr> + ?Sized>(s: &S) -> sdl2::surface::Surface {
-    return sdl2::surface::Surface::load_bmp(Path::new(s)).unwrap();
+    sdl2::surface::Surface::load_bmp(Path::new(s)).unwrap()
 }
 
 #[doc = "Load BMP texture from file path"]

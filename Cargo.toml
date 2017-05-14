@@ -12,6 +12,10 @@ gl = "*"
 libc = "*"
 rand = "*"
 byteorder = "*"
+clippy = { version = "*", optional = true }
+
+[features]
+default = []
 
 [lib]
 name = "tutcommon"

@@ -54,14 +54,18 @@ impl SdlContext {
         sdl_vs_context.gl_attr().set_multisample_buffers(1);
         sdl_vs_context.gl_attr().set_multisample_samples(4); // 4x antialiasing
         sdl_vs_context.gl_attr().set_context_version(3, 3); // OpenGL 3.3
-        sdl_vs_context.gl_attr()
+        sdl_vs_context
+            .gl_attr()
             .set_context_flags()
             .debug()
             .set();
         // Don't use old OpenGL
-        sdl_vs_context.gl_attr().set_context_profile(sdl2::video::GLProfile::Core);
+        sdl_vs_context
+            .gl_attr()
+            .set_context_profile(sdl2::video::GLProfile::Core);
 
-        let window = sdl_vs_context.window(window_name, 1024, 768)
+        let window = sdl_vs_context
+            .window(window_name, 1024, 768)
             .position_centered()
             .opengl()
             .build()

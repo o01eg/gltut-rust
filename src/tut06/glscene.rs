@@ -1,12 +1,11 @@
 use std;
 
 use gl;
-use gl::types::{GLfloat, GLint, GLuint};
+use gl::types::{GLfloat, GLint, GLuint, GLvoid};
 
 use sdl2;
 
 use tutcommon::glutils;
-use tutcommon::matrix::{Matrix4f, Vector3f};
 use tutcommon::controls::Controls;
 
 // Our vertices. Tree consecutive floats give a 3D vertex;
@@ -111,7 +110,7 @@ impl GLScene {
             // Send vertices to buffer.
             gl::BufferData(gl::ARRAY_BUFFER,
                            std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
-                           std::mem::transmute(&G_VERTEX_BUFFER_DATA),
+                           &G_VERTEX_BUFFER_DATA as *const [f32; 12 * 3 * 3] as *const GLvoid,
                            gl::STATIC_DRAW);
         }
 
@@ -122,7 +121,7 @@ impl GLScene {
             gl::BindBuffer(gl::ARRAY_BUFFER, uv_buffer_id);
             gl::BufferData(gl::ARRAY_BUFFER,
                            std::mem::size_of_val(&G_UV_BUFFER_DATA) as isize,
-                           std::mem::transmute(&G_UV_BUFFER_DATA),
+                           &G_UV_BUFFER_DATA as *const [f32; 12 * 3 * 2] as *const GLvoid,
                            gl::STATIC_DRAW);
         }
 

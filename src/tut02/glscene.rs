@@ -1,7 +1,7 @@
 use std;
 
 use gl;
-use gl::types::{GLfloat, GLuint};
+use gl::types::{GLfloat, GLuint, GLvoid};
 
 use tutcommon::glutils;
 
@@ -9,6 +9,7 @@ use tutcommon::glutils;
 static G_VERTEX_BUFFER_DATA: [GLfloat; 9] = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0];
 
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
+#[derive(Default)]
 pub struct GLScene {
     vertex_array_id: GLuint, //VAO id.
     vertex_buffer_id: GLuint, //VBO id.
@@ -43,7 +44,7 @@ impl GLScene {
             // Send vertices to buffer.
             gl::BufferData(gl::ARRAY_BUFFER,
                            std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
-                           std::mem::transmute(&G_VERTEX_BUFFER_DATA),
+                           &G_VERTEX_BUFFER_DATA as *const [f32; 9] as *const GLvoid,
                            gl::STATIC_DRAW);
         }
 

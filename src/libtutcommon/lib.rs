@@ -6,6 +6,9 @@
 #![doc = "Common stuff for tutorials."]
 #![crate_name = "tutcommon"]
 
+#![cfg_attr(feature="clippy", feature(plugin))]
+#![cfg_attr(feature="clippy", plugin(clippy))]
+
 // Include SDL2 library.
 extern crate sdl2;
 
