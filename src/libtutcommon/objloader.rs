@@ -13,12 +13,15 @@ use matrix::Vector3f;
 #[repr(C, packed)]
 pub struct Vector2f(f32, f32);
 
-#[doc = "Load obj file"]
-pub fn obj_load<P: AsRef<Path>>(path: P,
-                                out_vertices: &mut Vec<Vector3f>,
-                                out_uvs: &mut Vec<Vector2f>,
-                                out_normals: &mut Vec<Vector3f>)
-                                -> Result<()> {
+#[doc = "Load obj file."]
+/// Set invert_v if use DDS texture.
+pub fn obj_load<P: AsRef<Path>>(
+    path: P,
+    out_vertices: &mut Vec<Vector3f>,
+    out_uvs: &mut Vec<Vector2f>,
+    out_normals: &mut Vec<Vector3f>,
+    invert_v: bool,
+) -> Result<()> {
     let mut vertex_indices = Vec::<usize>::new();
     let mut uv_indices = Vec::<usize>::new();
     let mut normal_indices = Vec::<usize>::new();
@@ -38,32 +41,39 @@ pub fn obj_load<P: AsRef<Path>>(path: P,
                 if let Some(hdr) = split.next() {
                     match hdr {
                         "v" => {
-                            let vertex =
-                                Vector3f(FromStr::from_str(split.next().expect("vertex x"))
-                                             .expect("vertex x"),
-                                         FromStr::from_str(split.next().expect("vertex y"))
-                                             .expect("vertex y"),
-                                         FromStr::from_str(split.next().expect("vertex z"))
-                                             .expect("vertex z"));
+                            let vertex = Vector3f(
+                                FromStr::from_str(split.next().expect("vertex x"))
+                                    .expect("vertex x"),
+                                FromStr::from_str(split.next().expect("vertex y"))
+                                    .expect("vertex y"),
+                                FromStr::from_str(split.next().expect("vertex z"))
+                                    .expect("vertex z"),
+                            );
                             println!("[OBJ]Vertex: {:?}", &vertex);
                             temp_vertices.push(vertex);
                         }
                         "vt" => {
-                            let uv = Vector2f(FromStr::from_str(split.next().expect("vertex u"))
-                                                  .expect("vertex u"),
-                                              FromStr::from_str(split.next().expect("vertex v"))
-                                                  .expect("vertex v"));
+                            let uv = Vector2f(
+                                FromStr::from_str(split.next().expect("vertex u")).expect(
+                                    "vertex u",
+                                ),
+                                (if invert_v { -1f32 } else { 1f32 }) *
+                                    f32::from_str(split.next().expect("vertex v")).expect(
+                                        "vertex v",
+                                    ),
+                            );
                             println!("[OBJ]UV: {:?}", &uv);
                             temp_uvs.push(uv);
                         }
                         "vn" => {
-                            let normal =
-                                Vector3f(FromStr::from_str(split.next().expect("normal x"))
-                                             .expect("normal x"),
-                                         FromStr::from_str(split.next().expect("normal y"))
-                                             .expect("normal y"),
-                                         FromStr::from_str(split.next().expect("normal z"))
-                                             .expect("normal z"));
+                            let normal = Vector3f(
+                                FromStr::from_str(split.next().expect("normal x"))
+                                    .expect("normal x"),
+                                FromStr::from_str(split.next().expect("normal y"))
+                                    .expect("normal y"),
+                                FromStr::from_str(split.next().expect("normal z"))
+                                    .expect("normal z"),
+                            );
                             println!("[OBJ]Normal: {:?}", &normal);
                             temp_normals.push(normal);
                         }
@@ -75,19 +85,21 @@ pub fn obj_load<P: AsRef<Path>>(path: P,
                             // non-inclusive range
                             for i in 0..3 {
                                 let mut split_face = split.next().expect("face").split('/');
-                                vertex_index[i] =
-                                        FromStr::from_str(split_face.next().expect("face v"))
-                                            .expect("face v");
+                                vertex_index[i] = FromStr::from_str(
+                                    split_face.next().expect("face v"),
+                                ).expect("face v");
                                 uv_index[i] = FromStr::from_str(split_face.next().expect("face u"))
                                     .expect("face u");
-                                normal_index[i] =
-                                        FromStr::from_str(split_face.next().expect("face n"))
-                                            .expect("face n");
-                                println!("[OBJ] Face {}: v{} u{} n{}",
-                                         i,
-                                         vertex_index[i],
-                                         uv_index[i],
-                                         normal_index[i]);
+                                normal_index[i] = FromStr::from_str(
+                                    split_face.next().expect("face n"),
+                                ).expect("face n");
+                                println!(
+                                    "[OBJ] Face {}: v{} u{} n{}",
+                                    i,
+                                    vertex_index[i],
+                                    uv_index[i],
+                                    normal_index[i]
+                                );
                             }
 
                             vertex_indices.extend_from_slice(&vertex_index);
@@ -117,7 +129,7 @@ pub fn obj_load<P: AsRef<Path>>(path: P,
         out_uvs.push(temp_uvs[uv_idx - 1].clone());
     }
 
-    for ref outuv in out_uvs {
+    for outuv in out_uvs {
         println!("YV[]: {:?}", outuv);
     }
 

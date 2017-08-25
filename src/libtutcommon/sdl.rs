@@ -30,13 +30,15 @@ pub struct SdlContext {
     _gl_context: sdl2::video::GLContext,
 }
 
-extern "system" fn on_debug_message(_source: GLenum,
-                                    _gltype: GLenum,
-                                    _id: GLuint,
-                                    _severity: GLenum,
-                                    _length: GLsizei,
-                                    message: *const GLchar,
-                                    _: *mut GLvoid) {
+extern "system" fn on_debug_message(
+    _source: GLenum,
+    _gltype: GLenum,
+    _id: GLuint,
+    _severity: GLenum,
+    _length: GLsizei,
+    message: *const GLchar,
+    _: *mut GLvoid,
+) {
     let msg = unsafe { String::from_utf8_lossy(CStr::from_ptr(message).to_bytes()) };
 
     println!("[OpenGL] {}", msg);
@@ -54,15 +56,11 @@ impl SdlContext {
         sdl_vs_context.gl_attr().set_multisample_buffers(1);
         sdl_vs_context.gl_attr().set_multisample_samples(4); // 4x antialiasing
         sdl_vs_context.gl_attr().set_context_version(3, 3); // OpenGL 3.3
-        sdl_vs_context
-            .gl_attr()
-            .set_context_flags()
-            .debug()
-            .set();
+        sdl_vs_context.gl_attr().set_context_flags().debug().set();
         // Don't use old OpenGL
-        sdl_vs_context
-            .gl_attr()
-            .set_context_profile(sdl2::video::GLProfile::Core);
+        sdl_vs_context.gl_attr().set_context_profile(
+            sdl2::video::GLProfile::Core,
+        );
 
         let window = sdl_vs_context
             .window(window_name, 1024, 768)
@@ -73,17 +71,21 @@ impl SdlContext {
 
         let _gl_context = window.gl_create_context().unwrap();
 
-        gl::load_with(|s| unsafe { std::mem::transmute(sdl_vs_context.gl_get_proc_address(s)) });
+        gl::load_with(|s| unsafe {
+            std::mem::transmute(sdl_vs_context.gl_get_proc_address(s))
+        });
 
         if sdl_vs_context.gl_extension_supported("ARB_debug_support") {
             unsafe {
                 gl::Enable(gl::DEBUG_OUTPUT_SYNCHRONOUS);
-                gl::DebugMessageControl(gl::DONT_CARE,
-                                        gl::DONT_CARE,
-                                        gl::DONT_CARE,
-                                        0,
-                                        std::ptr::null(),
-                                        gl::TRUE);
+                gl::DebugMessageControl(
+                    gl::DONT_CARE,
+                    gl::DONT_CARE,
+                    gl::DONT_CARE,
+                    0,
+                    std::ptr::null(),
+                    gl::TRUE,
+                );
                 gl::DebugMessageCallback(on_debug_message, std::ptr::null());
             }
         }

@@ -46,7 +46,7 @@ impl Controls {
             view: Matrix4f::look_at(
                 &Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
                 &Vector3f(0.0, 0.0, 0.0), // and looks at the origin
-                &Vector3f(0.0, 1.0, 0.0) // Head is up (set to 0,-1,0 to look upside-down)
+                &Vector3f(0.0, 1.0, 0.0), // Head is up (set to 0,-1,0 to look upside-down)
             ),
             radius: 2.0,
         }
@@ -84,13 +84,17 @@ impl Controls {
             }
         };*/
 
-        let direction = Vector3f(-self.vertical_angle.cos() * self.horizontal_angle.sin(),
-                                 -self.vertical_angle.sin(),
-                                 -self.vertical_angle.cos() * self.horizontal_angle.cos());
+        let direction = Vector3f(
+            -self.vertical_angle.cos() * self.horizontal_angle.sin(),
+            -self.vertical_angle.sin(),
+            -self.vertical_angle.cos() * self.horizontal_angle.cos(),
+        );
 
-        let right = Vector3f((self.horizontal_angle - FRAC_PI_2).sin(),
-                             0.,
-                             (self.horizontal_angle - FRAC_PI_2).cos());
+        let right = Vector3f(
+            (self.horizontal_angle - FRAC_PI_2).sin(),
+            0.,
+            (self.horizontal_angle - FRAC_PI_2).cos(),
+        );
 
         let up = right.cross(&direction);
 
@@ -115,8 +119,10 @@ impl Controls {
         // 4:3 ratio, display range : 0.1 unit <-> 100 units
         self.projection = Matrix4f::perspective(self.initial_fov, 4. / 3., 0.1, 100.);
 
-        self.view = Matrix4f::look_at(&self.position, // Camera is here
-                                      &Vector3f(0.0, 0.0, 0.0), // Object center
-                                      &up); // Head is up (set to 0,-1,0 to look upside-down)
+        self.view = Matrix4f::look_at(
+            &self.position, // Camera is here
+            &Vector3f(0.0, 0.0, 0.0), // Object center
+            &up,
+        ); // Head is up (set to 0,-1,0 to look upside-down)
     }
 }

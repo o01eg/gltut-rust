@@ -13,9 +13,9 @@ use gl::types::{GLchar, GLuint, GLvoid};
 
 use sdl2;
 
-const FOURCC_DXT1: u32 = 0x31545844; // Equivalent to "DXT1" in ASCII
-const FOURCC_DXT3: u32 = 0x33545844; // Equivalent to "DXT3" in ASCII
-const FOURCC_DXT5: u32 = 0x35545844; // Equivalent to "DXT5" in ASCII
+const FOURCC_DXT1: u32 = 0x3154_5844; // Equivalent to "DXT1" in ASCII
+const FOURCC_DXT3: u32 = 0x3354_5844; // Equivalent to "DXT3" in ASCII
+const FOURCC_DXT5: u32 = 0x3554_5844; // Equivalent to "DXT5" in ASCII
 
 fn read_source_from_file<P: AsRef<Path>>(path: P) -> CString {
     let mut res = String::new();
@@ -61,12 +61,16 @@ pub fn load_program(vertex_file_path: &str, fragment_file_path: &str) -> GLuint 
         gl::GetProgramiv(program_id, gl::INFO_LOG_LENGTH, &mut info_log_length);
         let mut buf = Vec::<GLchar>::with_capacity((info_log_length + 1) as usize);
         buf.set_len((info_log_length + 1) as usize);
-        gl::GetProgramInfoLog(program_id,
-                              info_log_length + 1,
-                              std::ptr::null_mut(),
-                              buf[..].as_mut_ptr());
-        println!("Program link log: {}",
-                 String::from_utf8_lossy(std::mem::transmute::<&[i8], &[u8]>(&buf[..])));
+        gl::GetProgramInfoLog(
+            program_id,
+            info_log_length + 1,
+            std::ptr::null_mut(),
+            buf[..].as_mut_ptr(),
+        );
+        println!(
+            "Program link log: {}",
+            String::from_utf8_lossy(std::mem::transmute::<&[i8], &[u8]>(&buf[..]))
+        );
 
         gl::DeleteShader(vertex_shader_id);
         gl::DeleteShader(fragment_shader_id);
@@ -81,10 +85,12 @@ fn compile_and_check_shader(shader_id: GLuint, shader_source: &CStr) {
     unsafe {
         let source: &[i8] = std::mem::transmute::<&[u8], &[i8]>(shader_source.to_bytes_with_nul());
         // Compile Shader
-        gl::ShaderSource(shader_id,
-                         1,
-                         &source as *const &[i8] as *const *const i8,
-                         std::ptr::null());
+        gl::ShaderSource(
+            shader_id,
+            1,
+            &source as *const &[i8] as *const *const i8,
+            std::ptr::null(),
+        );
         gl::CompileShader(shader_id);
 
         // Check Shader
@@ -92,12 +98,16 @@ fn compile_and_check_shader(shader_id: GLuint, shader_source: &CStr) {
         gl::GetShaderiv(shader_id, gl::INFO_LOG_LENGTH, &mut info_log_length);
         let mut buf = Vec::<GLchar>::with_capacity((info_log_length + 1) as usize);
         buf.set_len((info_log_length + 1) as usize);
-        gl::GetShaderInfoLog(shader_id,
-                             info_log_length + 1,
-                             std::ptr::null_mut(),
-                             buf[..].as_mut_ptr());
-        println!("Shader compile log: {}",
-                 String::from_utf8_lossy(std::mem::transmute::<&[i8], &[u8]>(&buf[..])));
+        gl::GetShaderInfoLog(
+            shader_id,
+            info_log_length + 1,
+            std::ptr::null_mut(),
+            buf[..].as_mut_ptr(),
+        );
+        println!(
+            "Shader compile log: {}",
+            String::from_utf8_lossy(std::mem::transmute::<&[i8], &[u8]>(&buf[..]))
+        );
     }
 }
 
@@ -118,15 +128,17 @@ pub fn load_bmp_texture(file: &str) -> GLuint {
         gl::GenTextures(1, &mut texture_id);
         gl::BindTexture(gl::TEXTURE_2D, texture_id);
 
-        gl::TexImage2D(gl::TEXTURE_2D,
-                       0,
-                       gl::RGB as i32,
-                       width as i32,
-                       height as i32,
-                       0,
-                       gl::BGR,
-                       gl::UNSIGNED_BYTE,
-                       data.as_ptr() as *const GLvoid);
+        gl::TexImage2D(
+            gl::TEXTURE_2D,
+            0,
+            gl::RGB as i32,
+            width as i32,
+            height as i32,
+            0,
+            gl::BGR,
+            gl::UNSIGNED_BYTE,
+            data.as_ptr() as *const GLvoid,
+        );
 
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST as i32);
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST as i32);
@@ -169,12 +181,14 @@ pub fn load_dds_texture(vs: &sdl2::VideoSubsystem, file: &str) -> Result<GLuint>
     let mip_map_count: i32 = LittleEndian::read_u32(&header[24..]) as i32;
     let four_cc: u32 = LittleEndian::read_u32(&header[80..]);
 
-    println!("h {} w {} ls {} mmc {} fcc {}",
-             height,
-             width,
-             linear_size,
-             mip_map_count,
-             four_cc);
+    println!(
+        "h {} w {} ls {} mmc {} fcc {}",
+        height,
+        width,
+        linear_size,
+        mip_map_count,
+        four_cc
+    );
 
     let bufsize: usize = if mip_map_count > 1 {
         linear_size * 2
@@ -209,14 +223,16 @@ pub fn load_dds_texture(vs: &sdl2::VideoSubsystem, file: &str) -> Result<GLuint>
 
             let size = (((width + 3) / 4) * ((height + 3) / 4) * block_size) as usize;
 
-            gl::CompressedTexImage2D(gl::TEXTURE_2D,
-                                     level,
-                                     format,
-                                     width,
-                                     height,
-                                     0,
-                                     size as i32,
-                                     std::mem::transmute((&buffer[offset..]).as_ptr()));
+            gl::CompressedTexImage2D(
+                gl::TEXTURE_2D,
+                level,
+                format,
+                width,
+                height,
+                0,
+                size as i32,
+                std::mem::transmute((&buffer[offset..]).as_ptr()),
+            );
 
             offset += size;
             width /= 2;

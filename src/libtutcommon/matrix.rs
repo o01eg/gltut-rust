@@ -18,9 +18,11 @@ impl Vector3f {
 
     #[doc = "Cross product."]
     pub fn cross(&self, _rhs: &Vector3f) -> Vector3f {
-        Vector3f(self.1 * _rhs.2 - self.2 * _rhs.1,
-                 self.2 * _rhs.0 - self.0 * _rhs.2,
-                 self.0 * _rhs.1 - self.1 * _rhs.0)
+        Vector3f(
+            self.1 * _rhs.2 - self.2 * _rhs.1,
+            self.2 * _rhs.0 - self.0 * _rhs.2,
+            self.0 * _rhs.1 - self.1 * _rhs.0,
+        )
     }
 }
 
@@ -203,10 +205,12 @@ impl Matrix4f {
 impl Default for Matrix4f {
     fn default() -> Matrix4f {
         Matrix4f {
-            data: [[1.0, 0.0, 0.0, 0.0],
-                   [0.0, 1.0, 0.0, 0.0],
-                   [0.0, 0.0, 1.0, 0.0],
-                   [0.0, 0.0, 0.0, 1.0]],
+            data: [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ],
         }
     }
 }

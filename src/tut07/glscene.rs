@@ -35,17 +35,22 @@ impl GLScene {
         }
 
         // Create and compile our GLSL program from the shaders
-        let program_id = glutils::load_program("data/tut07/TransformVertexShader.vertexshader",
-                                               "data/tut07/TextureFragmentShader.fragmentshader");
+        let program_id = glutils::load_program(
+            "data/tut07/TransformVertexShader.vertexshader",
+            "data/tut07/TextureFragmentShader.fragmentshader",
+        );
 
         let mut vertices = Vec::new();
         let mut uvs = Vec::new();
         let mut normals = Vec::new();
 
-        objloader::obj_load("data/tut07/cube.obj"
-                            , &mut vertices
-                            , &mut uvs
-                            , &mut normals).expect("Load obj");
+        objloader::obj_load(
+            "data/tut07/cube.obj",
+            &mut vertices,
+            &mut uvs,
+            &mut normals,
+            true,
+        ).expect("Load obj");
         println!("UV len: {}", uvs.len());
         println!("UV elem size: {}", std::mem::size_of::<Vector2f>());
 
@@ -71,10 +76,12 @@ impl GLScene {
             gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buffer_id);
 
             // Send vertices to buffer.
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           (std::mem::size_of::<Vector3f>() * vertices.len()) as isize,
-                           std::mem::transmute(vertices.as_ptr()),
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                (std::mem::size_of::<Vector3f>() * vertices.len()) as isize,
+                std::mem::transmute(vertices.as_ptr()),
+                gl::STATIC_DRAW,
+            );
         }
 
         let mut uv_buffer_id = 0;
@@ -82,10 +89,12 @@ impl GLScene {
         unsafe {
             gl::GenBuffers(1, &mut uv_buffer_id);
             gl::BindBuffer(gl::ARRAY_BUFFER, uv_buffer_id);
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           (std::mem::size_of::<Vector2f>() * uvs.len()) as isize,
-                           std::mem::transmute(uvs.as_ptr()),
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                (std::mem::size_of::<Vector2f>() * uvs.len()) as isize,
+                std::mem::transmute(uvs.as_ptr()),
+                gl::STATIC_DRAW,
+            );
         }
 
         let texture_id = glutils::load_dds_texture(&vs, "data/tut07/uvmap.DDS").unwrap();
@@ -137,7 +146,7 @@ impl GLScene {
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
                 0, // stride
-                std::ptr::null() // array buffer offset
+                std::ptr::null(), // array buffer offset
             );
 
             // 2nd attribute buffer : colors
@@ -149,7 +158,7 @@ impl GLScene {
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
                 0, // stride
-                std::ptr::null() // array buffer offset
+                std::ptr::null(), // array buffer offset
             );
 
             // Draw the triangle!

@@ -29,8 +29,10 @@ impl GLScene {
         }
 
         // Create and compile our GLSL program from the shaders
-        let program_id = glutils::load_program("data/tut02/SimpleVertexShader.vertexshader",
-                                               "data/tut02/SimpleFragmentShader.fragmentshader");
+        let program_id = glutils::load_program(
+            "data/tut02/SimpleVertexShader.vertexshader",
+            "data/tut02/SimpleFragmentShader.fragmentshader",
+        );
 
         let mut vertex_buffer_id = 0;
 
@@ -42,10 +44,12 @@ impl GLScene {
             gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buffer_id);
 
             // Send vertices to buffer.
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
-                           &G_VERTEX_BUFFER_DATA as *const [f32; 9] as *const GLvoid,
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
+                &G_VERTEX_BUFFER_DATA as *const _ as *const GLvoid,
+                gl::STATIC_DRAW,
+            );
         }
 
         GLScene {
@@ -70,7 +74,7 @@ impl GLScene {
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
                 0, // stride
-                std::ptr::null() // array buffer offset
+                std::ptr::null(), // array buffer offset
             );
 
             // Use our shader

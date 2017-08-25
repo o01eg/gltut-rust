@@ -10,53 +10,134 @@ use tutcommon::glutils;
 use tutcommon::matrix::{Matrix4f, Vector3f};
 
 // An array of 3 vectors which represents 3 vertices.
-static G_TRIANGLE_VERTEX_BUFFER_DATA: [GLfloat; 9] = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0,
-                                                      0.0];
+static G_TRIANGLE_VERTEX_BUFFER_DATA: [GLfloat; 9] =
+    [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0];
 
 // One color for each vertex. They were generated randomly.
-static G_TRIANGLE_COLOR_BUFFER_DATA: [GLfloat; 9] = [0.583, 0.771, 0.014, 0.609, 0.115, 0.436,
-                                                     0.327, 0.483, 0.844];
+static G_TRIANGLE_COLOR_BUFFER_DATA: [GLfloat; 9] = [
+    0.583,
+    0.771,
+    0.014,
+    0.609,
+    0.115,
+    0.436,
+    0.327,
+    0.483,
+    0.844,
+];
 
 // Our vertices. Tree consecutive floats give a 3D vertex;
 // Three consecutive vertices give a triangle.
 // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
 static G_VERTEX_BUFFER_DATA: [GLfloat; 12 * 3 * 3] = [
-    -1.0,-1.0,-1.0, // triangle 1 : begin
-    -1.0,-1.0, 1.0,
-    -1.0, 1.0, 1.0, // triangle 1 : end
-    1.0, 1.0,-1.0, // triangle 2 : begin
-    -1.0,-1.0,-1.0,
-    -1.0, 1.0,-1.0, // triangle 2 : end
-    1.0,-1.0, 1.0,
-    -1.0,-1.0,-1.0,
-    1.0,-1.0,-1.0,
-    1.0, 1.0,-1.0,
-    1.0,-1.0,-1.0,
-    -1.0,-1.0,-1.0,
-    -1.0,-1.0,-1.0,
-    -1.0, 1.0, 1.0,
-    -1.0, 1.0,-1.0,
-    1.0,-1.0, 1.0,
-    -1.0,-1.0, 1.0,
-    -1.0,-1.0,-1.0,
-    -1.0, 1.0, 1.0,
-    -1.0,-1.0, 1.0,
-    1.0,-1.0, 1.0,
-    1.0, 1.0, 1.0,
-    1.0,-1.0,-1.0,
-    1.0, 1.0,-1.0,
-    1.0,-1.0,-1.0,
-    1.0, 1.0, 1.0,
-    1.0,-1.0, 1.0,
-    1.0, 1.0, 1.0,
-    1.0, 1.0,-1.0,
-    -1.0, 1.0,-1.0,
-    1.0, 1.0, 1.0,
-    -1.0, 1.0,-1.0,
-    -1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0,
-    -1.0, 1.0, 1.0,
-    1.0,-1.0, 1.0
+    -1.0,
+    -1.0,
+    -1.0, // triangle 1 : begin
+    -1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    1.0,
+    1.0, // triangle 1 : end
+    1.0,
+    1.0,
+    -1.0, // triangle 2 : begin
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    -1.0, // triangle 2 : end
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
 ];
 
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
@@ -87,8 +168,10 @@ impl GLScene {
         }
 
         // Create and compile our GLSL program from the shaders
-        let program_id = glutils::load_program("data/tut04/TransformVertexShader.vertexshader",
-                                               "data/tut04/ColorFragmentShader.fragmentshader");
+        let program_id = glutils::load_program(
+            "data/tut04/TransformVertexShader.vertexshader",
+            "data/tut04/ColorFragmentShader.fragmentshader",
+        );
 
         let matrix_id = unsafe {
             // Get a handle for our "MVP" uniform
@@ -104,7 +187,7 @@ impl GLScene {
         let view = Matrix4f::look_at(
             &Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
             &Vector3f(0.0, 0.0, 0.0), // and looks at the origin
-            &Vector3f(0.0, 1.0, 0.0) // Head is up (set to 0,-1,0 to look upside-down)
+            &Vector3f(0.0, 1.0, 0.0), // Head is up (set to 0,-1,0 to look upside-down)
         );
 
         println!("View matrix: {:?}", view);
@@ -134,10 +217,12 @@ impl GLScene {
             gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buffer_id);
 
             // Send vertices to buffer.
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
-                           &G_VERTEX_BUFFER_DATA as *const [f32; 12 * 3 * 3] as *const GLvoid,
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
+                &G_VERTEX_BUFFER_DATA as *const _ as *const GLvoid,
+                gl::STATIC_DRAW,
+            );
         }
 
         unsafe {
@@ -148,10 +233,12 @@ impl GLScene {
             gl::BindBuffer(gl::ARRAY_BUFFER, tri_vertex_buffer_id);
 
             // Send vertices to buffer.
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           std::mem::size_of_val(&G_TRIANGLE_VERTEX_BUFFER_DATA) as isize,
-                           &G_TRIANGLE_VERTEX_BUFFER_DATA as *const [f32; 9] as *const GLvoid,
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                std::mem::size_of_val(&G_TRIANGLE_VERTEX_BUFFER_DATA) as isize,
+                &G_TRIANGLE_VERTEX_BUFFER_DATA as *const _ as *const GLvoid,
+                gl::STATIC_DRAW,
+            );
         }
 
         let mut color_buffer_id = 0;
@@ -165,19 +252,23 @@ impl GLScene {
         unsafe {
             gl::GenBuffers(1, &mut color_buffer_id);
             gl::BindBuffer(gl::ARRAY_BUFFER, color_buffer_id);
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           (std::mem::size_of::<GLfloat>() * color_buffer_data.len()) as isize,
-                           std::mem::transmute(color_buffer_data.as_ptr()),
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                (std::mem::size_of::<GLfloat>() * color_buffer_data.len()) as isize,
+                std::mem::transmute(color_buffer_data.as_ptr()),
+                gl::STATIC_DRAW,
+            );
         }
 
         unsafe {
             gl::GenBuffers(1, &mut tri_color_buffer_id);
             gl::BindBuffer(gl::ARRAY_BUFFER, tri_color_buffer_id);
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           std::mem::size_of_val(&G_TRIANGLE_COLOR_BUFFER_DATA) as isize,
-                           &G_TRIANGLE_COLOR_BUFFER_DATA as *const [f32; 9] as *const GLvoid,
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                std::mem::size_of_val(&G_TRIANGLE_COLOR_BUFFER_DATA) as isize,
+                &G_TRIANGLE_COLOR_BUFFER_DATA as *const _ as *const GLvoid,
+                gl::STATIC_DRAW,
+            );
         }
 
         GLScene {
@@ -206,11 +297,12 @@ impl GLScene {
 
         unsafe {
             gl::BindBuffer(gl::ARRAY_BUFFER, self.color_buffer_id);
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           (std::mem::size_of::<GLfloat>() * self.color_buffer_data.len()) as
-                           isize,
-                           std::mem::transmute(self.color_buffer_data.as_ptr()),
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                (std::mem::size_of::<GLfloat>() * self.color_buffer_data.len()) as isize,
+                std::mem::transmute(self.color_buffer_data.as_ptr()),
+                gl::STATIC_DRAW,
+            );
         }
     }
 
@@ -228,7 +320,7 @@ impl GLScene {
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
                 0, // stride
-                std::ptr::null() // array buffer offset
+                std::ptr::null(), // array buffer offset
             );
 
             // 2nd attribute buffer : colors
@@ -240,7 +332,7 @@ impl GLScene {
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
                 0, // stride
-                std::ptr::null() // array buffer offset
+                std::ptr::null(), // array buffer offset
             );
 
             // Use our shader
@@ -268,7 +360,7 @@ impl GLScene {
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
                 0, // stride
-                std::ptr::null() // array buffer offset
+                std::ptr::null(), // array buffer offset
             );
 
             // 2nd attribute buffer : colors
@@ -280,7 +372,7 @@ impl GLScene {
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
                 0, // stride
-                std::ptr::null() // array buffer offset
+                std::ptr::null(), // array buffer offset
             );
 
             // Use our shader

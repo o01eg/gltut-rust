@@ -12,55 +12,192 @@ use tutcommon::controls::Controls;
 // Three consecutive vertices give a triangle.
 // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
 static G_VERTEX_BUFFER_DATA: [GLfloat; 12 * 3 * 3] = [
-    -1.0,-1.0,-1.0, // triangle 1 : begin
-    -1.0,-1.0, 1.0,
-    -1.0, 1.0, 1.0, // triangle 1 : end
-    1.0, 1.0,-1.0, // triangle 2 : begin
-    -1.0,-1.0,-1.0,
-    -1.0, 1.0,-1.0, // triangle 2 : end
-    1.0,-1.0, 1.0,
-    -1.0,-1.0,-1.0,
-    1.0,-1.0,-1.0,
-    1.0, 1.0,-1.0,
-    1.0,-1.0,-1.0,
-    -1.0,-1.0,-1.0,
-    -1.0,-1.0,-1.0,
-    -1.0, 1.0, 1.0,
-    -1.0, 1.0,-1.0,
-    1.0,-1.0, 1.0,
-    -1.0,-1.0, 1.0,
-    -1.0,-1.0,-1.0,
-    -1.0, 1.0, 1.0,
-    -1.0,-1.0, 1.0,
-    1.0,-1.0, 1.0,
-    1.0, 1.0, 1.0,
-    1.0,-1.0,-1.0,
-    1.0, 1.0,-1.0,
-    1.0,-1.0,-1.0,
-    1.0, 1.0, 1.0,
-    1.0,-1.0, 1.0,
-    1.0, 1.0, 1.0,
-    1.0, 1.0,-1.0,
-    -1.0, 1.0,-1.0,
-    1.0, 1.0, 1.0,
-    -1.0, 1.0,-1.0,
-    -1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0,
-    -1.0, 1.0, 1.0,
-    1.0,-1.0, 1.0
+    -1.0,
+    -1.0,
+    -1.0, // triangle 1 : begin
+    -1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    1.0,
+    1.0, // triangle 1 : end
+    1.0,
+    1.0,
+    -1.0, // triangle 2 : begin
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    -1.0, // triangle 2 : end
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    -1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
+    1.0,
+    1.0,
+    -1.0,
+    1.0,
 ];
 
 // Two UV coordinatesfor each vertex.
 // They were created with Blender. You'll learn shortly how to do this yourself.
-static G_UV_BUFFER_DATA: [GLfloat; 12 * 3 * 2] =
-    [0.000059, 0.000004, 0.000103, 0.336048, 0.335973, 0.335903, 1.000023, 0.000013, 0.667979,
-     0.335851, 0.999958, 0.336064, 0.667979, 0.335851, 0.336024, 0.671877, 0.667969, 0.671889,
-     1.000023, 0.000013, 0.668104, 0.000013, 0.667979, 0.335851, 0.000059, 0.000004, 0.335973,
-     0.335903, 0.336098, 0.000071, 0.667979, 0.335851, 0.335973, 0.335903, 0.336024, 0.671877,
-     1.000004, 0.671847, 0.999958, 0.336064, 0.667979, 0.335851, 0.668104, 0.000013, 0.335973,
-     0.335903, 0.667979, 0.335851, 0.335973, 0.335903, 0.668104, 0.000013, 0.336098, 0.000071,
-     0.000103, 0.336048, 0.000004, 0.671870, 0.336024, 0.671877, 0.000103, 0.336048, 0.336024,
-     0.671877, 0.335973, 0.335903, 0.667969, 0.671889, 1.000004, 0.671847, 0.667979, 0.335851];
+static G_UV_BUFFER_DATA: [GLfloat; 12 * 3 * 2] = [
+    0.000059,
+    0.000004,
+    0.000103,
+    0.336048,
+    0.335973,
+    0.335903,
+    1.000023,
+    0.000013,
+    0.667979,
+    0.335851,
+    0.999958,
+    0.336064,
+    0.667979,
+    0.335851,
+    0.336024,
+    0.671877,
+    0.667969,
+    0.671889,
+    1.000023,
+    0.000013,
+    0.668104,
+    0.000013,
+    0.667979,
+    0.335851,
+    0.000059,
+    0.000004,
+    0.335973,
+    0.335903,
+    0.336098,
+    0.000071,
+    0.667979,
+    0.335851,
+    0.335973,
+    0.335903,
+    0.336024,
+    0.671877,
+    1.000004,
+    0.671847,
+    0.999958,
+    0.336064,
+    0.667979,
+    0.335851,
+    0.668104,
+    0.000013,
+    0.335973,
+    0.335903,
+    0.667979,
+    0.335851,
+    0.335973,
+    0.335903,
+    0.668104,
+    0.000013,
+    0.336098,
+    0.000071,
+    0.000103,
+    0.336048,
+    0.000004,
+    0.671870,
+    0.336024,
+    0.671877,
+    0.000103,
+    0.336048,
+    0.336024,
+    0.671877,
+    0.335973,
+    0.335903,
+    0.667969,
+    0.671889,
+    1.000004,
+    0.671847,
+    0.667979,
+    0.335851,
+];
 
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
 pub struct GLScene {
@@ -86,8 +223,10 @@ impl GLScene {
         }
 
         // Create and compile our GLSL program from the shaders
-        let program_id = glutils::load_program("data/tut06/TransformVertexShader.vertexshader",
-                                               "data/tut06/TextureFragmentShader.fragmentshader");
+        let program_id = glutils::load_program(
+            "data/tut06/TransformVertexShader.vertexshader",
+            "data/tut06/TextureFragmentShader.fragmentshader",
+        );
 
         let matrix_uniform_id = unsafe {
             // Get a handle for our "MVP" uniform
@@ -108,10 +247,12 @@ impl GLScene {
             gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buffer_id);
 
             // Send vertices to buffer.
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
-                           &G_VERTEX_BUFFER_DATA as *const [f32; 12 * 3 * 3] as *const GLvoid,
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
+                &G_VERTEX_BUFFER_DATA as *const _ as *const GLvoid,
+                gl::STATIC_DRAW,
+            );
         }
 
         let mut uv_buffer_id = 0;
@@ -119,10 +260,12 @@ impl GLScene {
         unsafe {
             gl::GenBuffers(1, &mut uv_buffer_id);
             gl::BindBuffer(gl::ARRAY_BUFFER, uv_buffer_id);
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           std::mem::size_of_val(&G_UV_BUFFER_DATA) as isize,
-                           &G_UV_BUFFER_DATA as *const [f32; 12 * 3 * 2] as *const GLvoid,
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                std::mem::size_of_val(&G_UV_BUFFER_DATA) as isize,
+                &G_UV_BUFFER_DATA as *const _ as *const GLvoid,
+                gl::STATIC_DRAW,
+            );
         }
 
         let texture_id = glutils::load_dds_texture(&vs, "data/tut06/uvtemplate.DDS").unwrap();
@@ -174,7 +317,7 @@ impl GLScene {
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
                 0, // stride
-                std::ptr::null() // array buffer offset
+                std::ptr::null(), // array buffer offset
             );
 
             // 2nd attribute buffer : colors
@@ -186,7 +329,7 @@ impl GLScene {
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
                 0, // stride
-                std::ptr::null() // array buffer offset
+                std::ptr::null(), // array buffer offset
             );
 
             // Draw the triangle!

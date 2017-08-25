@@ -34,8 +34,10 @@ impl GLScene {
         let mut vertex_buffer_id = 0;
 
         // Create and compile our GLSL program from the shaders
-        let program_id = tutcommon::glutils::load_program("data/tut03/SimpleTransform.vertexshader",
-                                                          "data/tut03/SingleColor.fragmentshader");
+        let program_id = tutcommon::glutils::load_program(
+            "data/tut03/SimpleTransform.vertexshader",
+            "data/tut03/SingleColor.fragmentshader",
+        );
 
         let matrix_id = unsafe {
             // Get a handle for our "MVP" uniform
@@ -56,7 +58,7 @@ impl GLScene {
         let view = Matrix4f::look_at(
             &Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
             &Vector3f(0.0, 0.0, 0.0), // and looks at the origin
-            &Vector3f(0.0, 1.0, 0.0) // Head is up (set to 0,-1,0 to look upside-down)
+            &Vector3f(0.0, 1.0, 0.0), // Head is up (set to 0,-1,0 to look upside-down)
         );
 
         println!("View matrix: {:?}", view);
@@ -81,10 +83,12 @@ impl GLScene {
             gl::BindBuffer(gl::ARRAY_BUFFER, vertex_buffer_id);
 
             // Send vertices to buffer.
-            gl::BufferData(gl::ARRAY_BUFFER,
-                           std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
-                           &G_VERTEX_BUFFER_DATA as *const [f32; 9] as *const GLvoid,
-                           gl::STATIC_DRAW);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                std::mem::size_of_val(&G_VERTEX_BUFFER_DATA) as isize,
+                &G_VERTEX_BUFFER_DATA as *const _ as *const GLvoid,
+                gl::STATIC_DRAW,
+            );
         }
 
         GLScene {
@@ -111,7 +115,7 @@ impl GLScene {
                 gl::FLOAT, // type
                 gl::FALSE, // normalized?
                 0, // stride
-                std::ptr::null() // array buffer offset
+                std::ptr::null(), // array buffer offset
             );
 
             // Use our shader
