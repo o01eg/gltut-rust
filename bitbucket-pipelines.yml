@@ -9,9 +9,8 @@ pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
-          - add-apt-repository "deb http://deb.debian.org/debian stretch main"
           - apt-get update
-          - apt install libsdl2-dev
+          - apt-get install -y libsdl2-dev
           - cargo build -v
           - cargo test -v
 
