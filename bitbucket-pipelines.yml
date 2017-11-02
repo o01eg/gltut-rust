@@ -8,9 +8,15 @@ image: rust:1.21
 pipelines:
   default:
     - step:
+	caches:
+	  - crates
         script: # Modify the commands below to build your repository.
           - apt-get update
           - apt-get install -y libsdl2-dev
           - cargo build -v
           - cargo test -v
+
+definitions:
+  caches:
+    crates: ~/.cargo
 
