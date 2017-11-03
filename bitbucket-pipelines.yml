@@ -13,8 +13,19 @@ pipelines:
         script: # Modify the commands below to build your repository.
           - apt-get update
           - apt-get install -y libsdl2-dev
+          - cargo update -v
           - cargo build -v
           - cargo test -v
+    - step:
+        name: Nightly
+        image: rust:nightly
+        caches:
+          - crates
+        script:
+          - apt-get update
+          - apt-get install -y libsdl2-dev
+          - cargo update -v
+          - cargo build -v --features clippy
 definitions:
   caches:
     crates: ~/.cargo
