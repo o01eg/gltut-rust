@@ -18,7 +18,7 @@ pipelines:
           - cargo test -v
     - step:
         name: Nightly
-        image: rust:nightly
+        image: rustlang/rust:nightly
         caches:
           - crates
         script:
