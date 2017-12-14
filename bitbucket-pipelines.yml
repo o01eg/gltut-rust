@@ -3,16 +3,17 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: rust:1.21
+image: rust:latest
 
 pipelines:
   default:
     - step:
         caches:
           - crates
-        script: # Modify the commands below to build your repository.
+        script:
           - apt-get update
           - apt-get install -y libsdl2-dev
+          - rustc --verbose --version
           - cargo update -v
           - cargo build -v
           - cargo test -v
@@ -24,8 +25,10 @@ pipelines:
         script:
           - apt-get update
           - apt-get install -y libsdl2-dev
+          - rustc --verbose --version
           - cargo update -v
           - cargo build -v --features clippy
+          - cargo test -v
 definitions:
   caches:
     crates: ~/.cargo
