@@ -1,7 +1,8 @@
 use std;
 
-use gl;
-use gl::types::{GLfloat, GLuint, GLvoid};
+use gl::{
+    self, types::{GLfloat, GLuint, GLvoid},
+};
 
 use tutcommon::glutils;
 
@@ -65,8 +66,8 @@ impl GLScene {
             gl::EnableVertexAttribArray(0);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_buffer_id);
             gl::VertexAttribPointer(
-                // attribute 0. No particular reason for 0, but must match the layout in the
-                // shader.
+                // attribute 0. No particular reason for 0, but must match the
+                // layout in the shader.
                 0,
                 3,                // size
                 gl::FLOAT,        // type

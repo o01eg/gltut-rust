@@ -1,16 +1,19 @@
 use std;
 
-use gl;
-use gl::types::{GLfloat, GLint, GLuint, GLvoid};
+use gl::{
+    self, types::{GLfloat, GLint, GLuint, GLvoid},
+};
 
 use sdl2;
 
-use tutcommon::glutils;
-use tutcommon::matrix::{Matrix4f, Vector3f};
+use tutcommon::{
+    glutils, matrix::{Matrix4f, Vector3f},
+};
 
 // Our vertices. Tree consecutive floats give a 3D vertex;
 // Three consecutive vertices give a triangle.
-// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
+// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles,
+// and 12*3 vertices
 static G_VERTEX_BUFFER_DATA: [GLfloat; 12 * 3 * 3] = [
     -1.0,
     -1.0,
@@ -124,7 +127,7 @@ static G_VERTEX_BUFFER_DATA: [GLfloat; 12 * 3 * 3] = [
 
 // Two UV coordinatesfor each vertex.
 // They were created with Blender. You'll learn shortly how to do this yourself.
-#[allow(excessive_precision)]
+#[cfg_attr(feature = "cargo-clippy", allow(excessive_precision))]
 static G_UV_BUFFER_DATA: [GLfloat; 12 * 3 * 2] = [
     0.000_059, 0.000_004, 0.000_103, 0.336_048, 0.335_973, 0.335_903, 1.000_023, 0.000_013,
     0.667_979, 0.335_851, 0.999_958, 0.336_064, 0.667_979, 0.335_851, 0.336_024, 0.671_877,
@@ -175,14 +178,16 @@ impl GLScene {
             gl::GetUniformLocation(program_id, "myTextureSampler\x00".as_ptr() as *const i8)
         };
 
-        // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+        // Projection matrix : 45° Field of View, 4:3 ratio, display range :
+        // 0.1 unit <-> 100 units
         let projection: Matrix4f = Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
 
         // Camera matrix
         let view = Matrix4f::look_at(
             &Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
             &Vector3f(0.0, 0.0, 0.0), // and looks at the origin
-            &Vector3f(0.0, 1.0, 0.0), // Head is up (set to 0,-1,0 to look upside-down)
+            &Vector3f(0.0, 1.0, 0.0), /* Head is up (set to 0,-1,0 to look
+                                       * upside-down) */
         );
 
         // Model matrix : an identity matrix (model will be at the origin)
@@ -259,8 +264,8 @@ impl GLScene {
             gl::EnableVertexAttribArray(0);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_buffer_id);
             gl::VertexAttribPointer(
-                // attribute 0. No particular reason for 0, but must match the layout in the
-                // shader.
+                // attribute 0. No particular reason for 0, but must match the
+                // layout in the shader.
                 0,
                 3,                // size
                 gl::FLOAT,        // type

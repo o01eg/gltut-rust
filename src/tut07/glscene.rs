@@ -1,15 +1,14 @@
 use std;
 
-use gl;
-use gl::types::{GLint, GLuint, GLvoid};
+use gl::{
+    self, types::{GLint, GLuint, GLvoid},
+};
 
 use sdl2;
 
-use tutcommon::controls::Controls;
-use tutcommon::glutils;
-use tutcommon::matrix::Vector3f;
-use tutcommon::objloader;
-use tutcommon::objloader::Vector2f;
+use tutcommon::{
+    controls::Controls, glutils, matrix::Vector3f, objloader::{self, Vector2f},
+};
 
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
 pub struct GLScene {
@@ -136,8 +135,8 @@ impl GLScene {
             gl::EnableVertexAttribArray(0);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_buffer_id);
             gl::VertexAttribPointer(
-                // attribute 0. No particular reason for 0, but must match the layout in the
-                // shader.
+                // attribute 0. No particular reason for 0, but must match the
+                // layout in the shader.
                 0,
                 3,                // size
                 gl::FLOAT,        // type

@@ -70,7 +70,7 @@ impl SdlContext {
 
         let _gl_context = window.gl_create_context().unwrap();
 
-        gl::load_with(|s| sdl_vs_context.gl_get_proc_address(s) as *const GLvoid );
+        gl::load_with(|s| sdl_vs_context.gl_get_proc_address(s) as *const GLvoid);
 
         if sdl_vs_context.gl_extension_supported("ARB_debug_support") {
             unsafe {

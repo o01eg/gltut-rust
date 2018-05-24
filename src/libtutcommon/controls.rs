@@ -2,9 +2,7 @@
 
 use matrix::{Matrix4f, Vector3f};
 
-use sdl2;
-use sdl2::keyboard::Scancode;
-use sdl2::mouse::MouseWheelDirection;
+use sdl2::{self, keyboard::Scancode, mouse::MouseWheelDirection};
 
 use std::f32::consts::FRAC_PI_2;
 
@@ -43,9 +41,11 @@ impl Controls {
             ts,
             projection: Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0),
             view: Matrix4f::look_at(
-                &Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
+                &Vector3f(4.0, 3.0, 3.0), /* Camera is at (4,3,3), in World
+                                           * Space */
                 &Vector3f(0.0, 0.0, 0.0), // and looks at the origin
-                &Vector3f(0.0, 1.0, 0.0), // Head is up (set to 0,-1,0 to look upside-down)
+                &Vector3f(0.0, 1.0, 0.0), /* Head is up (set to 0,-1,0 to
+                                           * look upside-down) */
             ),
             radius: 2.0,
         }
@@ -98,11 +98,13 @@ impl Controls {
 
         let keyboard_state = e.keyboard_state();
         if keyboard_state.is_scancode_pressed(Scancode::Up) {
-            //self.position = &self.position + &(&direction * (delta_time as f32 * self.speed));
+            //self.position = &self.position + &(&direction * (delta_time as
+            // f32 * self.speed));
             self.radius -= self.speed * delta_time as f32;
         }
         if keyboard_state.is_scancode_pressed(Scancode::Down) {
-            //self.position = &self.position - &(&direction * (delta_time as f32 * self.speed));
+            //self.position = &self.position - &(&direction * (delta_time as
+            // f32 * self.speed));
             self.radius += self.speed * delta_time as f32;
         }
         /*if keyboard_state.is_scancode_pressed(Scancode::Left) {

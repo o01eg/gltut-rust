@@ -1,15 +1,14 @@
 #![doc = "Common stuff for OpenGL."]
 
-use std;
-use std::ffi::{CStr, CString, OsStr};
-use std::fs::File;
-use std::io::{Read, Result};
-use std::path::Path;
+use std::{
+    self, ffi::{CStr, CString, OsStr}, fs::File, io::{Read, Result}, path::Path,
+};
 
 use byteorder::{ByteOrder, LittleEndian};
 
-use gl;
-use gl::types::{GLchar, GLuint, GLvoid};
+use gl::{
+    self, types::{GLchar, GLuint, GLvoid},
+};
 
 use sdl2;
 
@@ -69,7 +68,7 @@ pub fn load_program(vertex_file_path: &str, fragment_file_path: &str) -> GLuint 
         );
         println!(
             "Program link log: {}",
-            String::from_utf8_lossy(&*(&buf[..] as *const _ as * const [u8] ))
+            String::from_utf8_lossy(&*(&buf[..] as *const _ as *const [u8]))
         );
 
         gl::DeleteShader(vertex_shader_id);
@@ -106,7 +105,7 @@ fn compile_and_check_shader(shader_id: GLuint, shader_source: &CStr) {
         );
         println!(
             "Shader compile log: {}",
-            String::from_utf8_lossy(&*(&buf[..] as *const _ as * const [u8]))
+            String::from_utf8_lossy(&*(&buf[..] as *const _ as *const [u8]))
         );
     }
 }
@@ -159,10 +158,10 @@ pub fn load_dds_texture(vs: &sdl2::VideoSubsystem, file: &str) -> Result<GLuint>
     const COMPRESSED_RGBA_S3TC_DXT3_EXT: GLuint = 0x83F2;
     const COMPRESSED_RGBA_S3TC_DXT5_EXT: GLuint = 0x83F3;
 
-    let mut f: File = try!(File::open(file));
+    let mut f: File = File::open(file)?;
     let mut sign4: [u8; 4] = [0; 4];
 
-    if try!(f.read(&mut sign4)) != 4 {
+    if f.read(&mut sign4)? != 4 {
         panic!("Cann't read 4 bytes");
     }
     if &sign4[..] != b"DDS " {
@@ -170,7 +169,7 @@ pub fn load_dds_texture(vs: &sdl2::VideoSubsystem, file: &str) -> Result<GLuint>
     }
 
     let mut header: [u8; 124] = [0; 124];
-    if try!(f.read(&mut header)) != 124 {
+    if f.read(&mut header)? != 124 {
         panic!("Cann't read 124 bytes");
     }
 
@@ -192,7 +191,7 @@ pub fn load_dds_texture(vs: &sdl2::VideoSubsystem, file: &str) -> Result<GLuint>
     };
     let mut buffer: Vec<u8> = Vec::with_capacity(bufsize);
 
-    try!(f.read_to_end(&mut buffer));
+    f.read_to_end(&mut buffer)?;
 
     //let components = if four_cc == FOURCC_DXT1 { 3 } else { 4 };
     let format = match four_cc {

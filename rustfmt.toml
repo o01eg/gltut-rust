@@ -1,0 +1,14 @@
+comment_width = 100
+condense_wildcard_suffixes = true
+error_on_line_overflow = true
+error_on_unformatted = true
+format_strings = true
+merge_imports = true
+max_width = 100
+reorder_imports = true
+reorder_modules = true
+reorder_impl_items = true
+use_field_init_shorthand = true
+use_try_shorthand = true
+wrap_comments = true
+

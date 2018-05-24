@@ -1,16 +1,17 @@
 use std;
 
-use gl;
-use gl::types::{GLfloat, GLint, GLuint, GLvoid};
+use gl::{
+    self, types::{GLfloat, GLint, GLuint, GLvoid},
+};
 
 use sdl2;
 
-use tutcommon::controls::Controls;
-use tutcommon::glutils;
+use tutcommon::{controls::Controls, glutils};
 
 // Our vertices. Tree consecutive floats give a 3D vertex;
 // Three consecutive vertices give a triangle.
-// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
+// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles,
+// and 12*3 vertices
 static G_VERTEX_BUFFER_DATA: [GLfloat; 12 * 3 * 3] = [
     -1.0,
     -1.0,
@@ -124,16 +125,17 @@ static G_VERTEX_BUFFER_DATA: [GLfloat; 12 * 3 * 3] = [
 
 // Two UV coordinatesfor each vertex.
 // They were created with Blender. You'll learn shortly how to do this yourself.
-#[allow(excessive_precision)]
+#[cfg_attr(feature = "cargo-clippy", allow(excessive_precision))]
 static G_UV_BUFFER_DATA: [GLfloat; 12 * 3 * 2] = [
-    0.000_059, 0.000_004, 0.000_103, 0.336_048, 0.335_973, 0.335_903, 1.000_023, 0.000_013, 0.667_979,
-    0.335_851, 0.999_958, 0.336_064, 0.667_979, 0.335_851, 0.336_024, 0.671_877, 0.667_969, 0.671_889,
-    1.000_023, 0.000_013, 0.668_104, 0.000_013, 0.667_979, 0.335_851, 0.000_059, 0.000_004, 0.335_973,
-    0.335_903, 0.336_098, 0.000_071, 0.667_979, 0.335_851, 0.335_973, 0.335_903, 0.336_024, 0.671_877,
-    1.000_004, 0.671_847, 0.999_958, 0.336_064, 0.667_979, 0.335_851, 0.668_104, 0.000_013, 0.335_973,
-    0.335_903, 0.667_979, 0.335_851, 0.335_973, 0.335_903, 0.668_104, 0.000_013, 0.336_098, 0.000_071,
-    0.000_103, 0.336_048, 0.000_004, 0.671_870, 0.336_024, 0.671_877, 0.000_103, 0.336_048, 0.336_024,
-    0.671_877, 0.335_973, 0.335_903, 0.667_969, 0.671_889, 1.000_004, 0.671_847, 0.667_979, 0.335_851,
+    0.000_059, 0.000_004, 0.000_103, 0.336_048, 0.335_973, 0.335_903, 1.000_023, 0.000_013,
+    0.667_979, 0.335_851, 0.999_958, 0.336_064, 0.667_979, 0.335_851, 0.336_024, 0.671_877,
+    0.667_969, 0.671_889, 1.000_023, 0.000_013, 0.668_104, 0.000_013, 0.667_979, 0.335_851,
+    0.000_059, 0.000_004, 0.335_973, 0.335_903, 0.336_098, 0.000_071, 0.667_979, 0.335_851,
+    0.335_973, 0.335_903, 0.336_024, 0.671_877, 1.000_004, 0.671_847, 0.999_958, 0.336_064,
+    0.667_979, 0.335_851, 0.668_104, 0.000_013, 0.335_973, 0.335_903, 0.667_979, 0.335_851,
+    0.335_973, 0.335_903, 0.668_104, 0.000_013, 0.336_098, 0.000_071, 0.000_103, 0.336_048,
+    0.000_004, 0.671_870, 0.336_024, 0.671_877, 0.000_103, 0.336_048, 0.336_024, 0.671_877,
+    0.335_973, 0.335_903, 0.667_969, 0.671_889, 1.000_004, 0.671_847, 0.667_979, 0.335_851,
 ];
 
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
@@ -244,8 +246,8 @@ impl GLScene {
             gl::EnableVertexAttribArray(0);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_buffer_id);
             gl::VertexAttribPointer(
-                // attribute 0. No particular reason for 0, but must match the layout in the
-                // shader.
+                // attribute 0. No particular reason for 0, but must match the
+                // layout in the shader.
                 0,
                 3,                // size
                 gl::FLOAT,        // type

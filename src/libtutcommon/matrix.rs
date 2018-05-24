@@ -53,7 +53,8 @@ impl<'a> Mul<f32> for &'a Vector3f {
 #[derive(Debug)]
 #[repr(C)]
 pub struct Matrix4f {
-    data: [[f32; 4]; 4], //column major order data[j][i] points to j-th column i-th row.
+    data: [[f32; 4]; 4], /* column major order data[j][i] points to j-th
+                          * column i-th row. */
 }
 
 impl Matrix4f {

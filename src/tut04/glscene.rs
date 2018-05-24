@@ -1,13 +1,14 @@
 use std;
 
-use gl;
-use gl::types::{GLfloat, GLint, GLuint, GLvoid};
+use gl::{
+    self, types::{GLfloat, GLint, GLuint, GLvoid},
+};
 
-use rand;
-use rand::Rng;
+use rand::{self, Rng};
 
-use tutcommon::glutils;
-use tutcommon::matrix::{Matrix4f, Vector3f};
+use tutcommon::{
+    glutils, matrix::{Matrix4f, Vector3f},
+};
 
 // An array of 3 vectors which represents 3 vertices.
 static G_TRIANGLE_VERTEX_BUFFER_DATA: [GLfloat; 9] =
@@ -20,7 +21,8 @@ static G_TRIANGLE_COLOR_BUFFER_DATA: [GLfloat; 9] = [
 
 // Our vertices. Tree consecutive floats give a 3D vertex;
 // Three consecutive vertices give a triangle.
-// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
+// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles,
+// and 12*3 vertices
 static G_VERTEX_BUFFER_DATA: [GLfloat; 12 * 3 * 3] = [
     -1.0,
     -1.0,
@@ -169,7 +171,8 @@ impl GLScene {
             gl::GetUniformLocation(program_id, "MVP\x00".as_ptr() as *const i8)
         };
 
-        // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+        // Projection matrix : 45° Field of View, 4:3 ratio, display range :
+        // 0.1 unit <-> 100 units
         let projection: Matrix4f = Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
 
         println!("Projection matrix: {:?}", projection);
@@ -178,7 +181,8 @@ impl GLScene {
         let view = Matrix4f::look_at(
             &Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
             &Vector3f(0.0, 0.0, 0.0), // and looks at the origin
-            &Vector3f(0.0, 1.0, 0.0), // Head is up (set to 0,-1,0 to look upside-down)
+            &Vector3f(0.0, 1.0, 0.0), /* Head is up (set to 0,-1,0 to look
+                                       * upside-down) */
         );
 
         println!("View matrix: {:?}", view);
@@ -246,7 +250,7 @@ impl GLScene {
             gl::BufferData(
                 gl::ARRAY_BUFFER,
                 (std::mem::size_of::<GLfloat>() * color_buffer_data.len()) as isize,
-                color_buffer_data.as_ptr() as * const GLvoid,
+                color_buffer_data.as_ptr() as *const GLvoid,
                 gl::STATIC_DRAW,
             );
         }
@@ -291,7 +295,7 @@ impl GLScene {
             gl::BufferData(
                 gl::ARRAY_BUFFER,
                 (std::mem::size_of::<GLfloat>() * self.color_buffer_data.len()) as isize,
-                self.color_buffer_data.as_ptr() as * const GLvoid,
+                self.color_buffer_data.as_ptr() as *const GLvoid,
                 gl::STATIC_DRAW,
             );
         }
@@ -304,8 +308,8 @@ impl GLScene {
             gl::EnableVertexAttribArray(0);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_buffer_id);
             gl::VertexAttribPointer(
-                // attribute 0. No particular reason for 0, but must match the layout in the
-                // shader.
+                // attribute 0. No particular reason for 0, but must match the
+                // layout in the shader.
                 0,
                 3,                // size
                 gl::FLOAT,        // type

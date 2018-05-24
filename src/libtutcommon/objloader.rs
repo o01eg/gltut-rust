@@ -1,9 +1,8 @@
 #![doc = "Module for loading OBJ files."]
 
-use std::fs::File;
-use std::io::{BufReader, Result};
-use std::path::Path;
-use std::str::FromStr;
+use std::{
+    fs::File, io::{BufReader, Result}, path::Path, str::FromStr,
+};
 
 use matrix::Vector3f;
 

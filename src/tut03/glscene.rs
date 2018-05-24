@@ -1,10 +1,12 @@
 use std;
 
-use gl;
-use gl::types::{GLfloat, GLint, GLuint, GLvoid};
+use gl::{
+    self, types::{GLfloat, GLint, GLuint, GLvoid},
+};
 
-use tutcommon;
-use tutcommon::matrix::{Matrix4f, Vector3f};
+use tutcommon::{
+    self, matrix::{Matrix4f, Vector3f},
+};
 
 // An array of 3 vectors which represents 3 vertices.
 static G_VERTEX_BUFFER_DATA: [GLfloat; 9] = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0, 0.0];
@@ -43,9 +45,9 @@ impl GLScene {
             gl::GetUniformLocation(program_id, "MVP\x00".as_ptr() as *const i8)
         };
 
-        // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-        //let projection : tutcommon::Matrix4f = tutcommon::Matrix4f::perspective(45.0
-        //, 4.0 / 3.0
+        // Projection matrix : 45° Field of View, 4:3 ratio, display range :
+        // 0.1 unit <-> 100 units let projection : tutcommon::Matrix4f
+        // = tutcommon::Matrix4f::perspective(45.0 , 4.0 / 3.0
         //, 0.1
         //, 100.0);
 
@@ -57,7 +59,8 @@ impl GLScene {
         let view = Matrix4f::look_at(
             &Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
             &Vector3f(0.0, 0.0, 0.0), // and looks at the origin
-            &Vector3f(0.0, 1.0, 0.0), // Head is up (set to 0,-1,0 to look upside-down)
+            &Vector3f(0.0, 1.0, 0.0), /* Head is up (set to 0,-1,0 to look
+                                       * upside-down) */
         );
 
         println!("View matrix: {:?}", view);
@@ -106,8 +109,8 @@ impl GLScene {
             gl::EnableVertexAttribArray(0);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_buffer_id);
             gl::VertexAttribPointer(
-                // attribute 0. No particular reason for 0, but must match the layout in the
-                // shader.
+                // attribute 0. No particular reason for 0, but must match the
+                // layout in the shader.
                 0,
                 3,                // size
                 gl::FLOAT,        // type
