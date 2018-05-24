@@ -19,7 +19,7 @@ pipelines:
           - cargo build -v
           - cargo test -v
           - cargo fmt -- --version
-          - cargo fmt --all -- --check
+          - cargo fmt --all -- --write-mode=diff
     - step:
         name: Nightly
         image: rustlang/rust:nightly
