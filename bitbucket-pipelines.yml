@@ -18,7 +18,8 @@ pipelines:
           - cargo update -v
           - cargo build -v
           - cargo test -v
-          - cargo fmt -- --check
+          - cargo fmt -- --version
+          - cargo fmt --all -- --check
     - step:
         name: Nightly
         image: rustlang/rust:nightly
@@ -33,7 +34,8 @@ pipelines:
           - cargo build -v
           - cargo test -v
           - cargo clippy -v
-          - cargo fmt -- --check
+          - cargo fmt -- --version
+          - cargo fmt --all -- --check
 definitions:
   caches:
     crates: ~/.cargo
