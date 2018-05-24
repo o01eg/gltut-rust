@@ -13,6 +13,7 @@ pipelines:
         script:
           - apt-get update
           - apt-get install -y libsdl2-dev
+          - rustup component add rustfmt-preview
           - rustc --verbose --version
           - cargo update -v
           - cargo build -v
@@ -26,6 +27,7 @@ pipelines:
         script:
           - apt-get update
           - apt-get install -y libsdl2-dev
+          - rustup component add rustfmt-preview --toolchain nightly
           - rustc --verbose --version
           - cargo update -v
           - cargo build -v
