@@ -64,7 +64,7 @@ impl GLScene {
         unsafe {
             //1st attribute buffer : vertices
             gl::EnableVertexAttribArray(0);
-            gl::BindBuffer(gl::ARRAY_BUFFER, self.vertex_buffer_id);
+            gl::BindBuffer(gl::ARRAY_BUFFER,  self.vertex_buffer_id);
             gl::VertexAttribPointer(
                 // attribute 0. No particular reason for 0, but must match the
                 // layout in the shader.

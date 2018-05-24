@@ -17,6 +17,7 @@ pipelines:
           - cargo update -v
           - cargo build -v
           - cargo test -v
+          - cargo fmt -- --check
     - step:
         name: Nightly
         image: rustlang/rust:nightly
@@ -27,8 +28,10 @@ pipelines:
           - apt-get install -y libsdl2-dev
           - rustc --verbose --version
           - cargo update -v
-          - cargo build -v --features clippy
+          - cargo build -v
           - cargo test -v
+          - cargo clippy -v
+          - cargo fmt -- --check
 definitions:
   caches:
     crates: ~/.cargo
