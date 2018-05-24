@@ -2,9 +2,7 @@
 #![deny(missing_docs)]
 #![deny(non_snake_case)]
 #![deny(non_upper_case_globals)]
-
 #![crate_name = "tut07"]
-
 #![doc = "http://www.opengl-tutorial.org/beginners-tutorials/tutorial-7-model-loading/"]
 
 // Include SDL2 library.
@@ -39,7 +37,7 @@ fn main() {
     }
 
     // init scene.
-    let mut scene = glscene::GLScene::new(sdl_context.vs);
+    let mut scene = glscene::GLScene::new(&sdl_context.vs);
     let mut controls = tutcommon::controls::Controls::new(sdl_context.ts);
 
     loop {
@@ -54,9 +52,9 @@ fn main() {
                         return;
                     }
                 }
-                sdl2::event::Event::MouseWheel { x, y, direction, .. } => {
-                    controls.process_wheel(x, y, direction)
-                }
+                sdl2::event::Event::MouseWheel {
+                    x, y, direction, ..
+                } => controls.process_wheel(x, y, direction),
                 _ => (),
             }
         }
@@ -72,6 +70,5 @@ fn main() {
 
         // Swap buffers.
         sdl_context.window.gl_swap_window();
-
     }
 }

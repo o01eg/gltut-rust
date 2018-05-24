@@ -1,31 +1,30 @@
 use std;
 
 use gl;
-use gl::types::{GLint, GLuint};
+use gl::types::{GLint, GLuint, GLvoid};
 
 use sdl2;
 
+use tutcommon::controls::Controls;
 use tutcommon::glutils;
 use tutcommon::matrix::Vector3f;
-use tutcommon::controls::Controls;
 use tutcommon::objloader;
 use tutcommon::objloader::Vector2f;
 
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
 pub struct GLScene {
-    vertex_array_id: GLuint, //VAO id.
-    vertex_buffer_id: GLuint, //VBO id.
-    uv_buffer_id: GLuint, // UV id.
-    program_id: GLuint, //Shader program id.
-    texture_id: GLuint, // Texture id.
-    matrix_uniform_id: GLint, // MVP uniform locaion.
+    vertex_array_id: GLuint,   //VAO id.
+    vertex_buffer_id: GLuint,  //VBO id.
+    uv_buffer_id: GLuint,      // UV id.
+    program_id: GLuint,        //Shader program id.
+    texture_id: GLuint,        // Texture id.
+    matrix_uniform_id: GLint,  // MVP uniform locaion.
     texture_uniform_id: GLint, // myTextureSampler uniform location.
 }
 
 impl GLScene {
     #[doc = "Create scene and init it."]
-    pub fn new(vs: sdl2::VideoSubsystem) -> GLScene {
-
+    pub fn new(vs: &sdl2::VideoSubsystem) -> GLScene {
         let mut vertex_array_id = 0;
 
         unsafe {
@@ -79,7 +78,7 @@ impl GLScene {
             gl::BufferData(
                 gl::ARRAY_BUFFER,
                 (std::mem::size_of::<Vector3f>() * vertices.len()) as isize,
-                std::mem::transmute(vertices.as_ptr()),
+                vertices.as_ptr() as *const GLvoid,
                 gl::STATIC_DRAW,
             );
         }
@@ -92,7 +91,7 @@ impl GLScene {
             gl::BufferData(
                 gl::ARRAY_BUFFER,
                 (std::mem::size_of::<Vector2f>() * uvs.len()) as isize,
-                std::mem::transmute(uvs.as_ptr()),
+                uvs.as_ptr() as *const GLvoid,
                 gl::STATIC_DRAW,
             );
         }
@@ -100,13 +99,13 @@ impl GLScene {
         let texture_id = glutils::load_dds_texture(&vs, "data/tut07/uvmap.DDS").unwrap();
 
         GLScene {
-            vertex_array_id: vertex_array_id,
-            vertex_buffer_id: vertex_buffer_id,
-            uv_buffer_id: uv_buffer_id,
-            texture_id: texture_id,
-            program_id: program_id,
-            matrix_uniform_id: matrix_uniform_id,
-            texture_uniform_id: texture_uniform_id,
+            vertex_array_id,
+            vertex_buffer_id,
+            uv_buffer_id,
+            texture_id,
+            program_id,
+            matrix_uniform_id,
+            texture_uniform_id,
         }
     }
 
@@ -115,12 +114,10 @@ impl GLScene {
 
     #[doc = "Render scene each frame."]
     pub fn draw(&self, controls: &Controls) {
-
         // Model matrix : an identity matrix (model will be at the origin)
         let model = std::default::Default::default();
 
         let mvp = controls.projection.mul(&controls.view).mul(&model);
-
 
         unsafe {
             // Use our shader
@@ -142,10 +139,10 @@ impl GLScene {
                 // attribute 0. No particular reason for 0, but must match the layout in the
                 // shader.
                 0,
-                3, // size
-                gl::FLOAT, // type
-                gl::FALSE, // normalized?
-                0, // stride
+                3,                // size
+                gl::FLOAT,        // type
+                gl::FALSE,        // normalized?
+                0,                // stride
                 std::ptr::null(), // array buffer offset
             );
 
@@ -153,11 +150,11 @@ impl GLScene {
             gl::EnableVertexAttribArray(1);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.uv_buffer_id);
             gl::VertexAttribPointer(
-                1, // attribute 1.
-                2, // size
-                gl::FLOAT, // type
-                gl::FALSE, // normalized?
-                0, // stride
+                1,                // attribute 1.
+                2,                // size
+                gl::FLOAT,        // type
+                gl::FALSE,        // normalized?
+                0,                // stride
                 std::ptr::null(), // array buffer offset
             );
 

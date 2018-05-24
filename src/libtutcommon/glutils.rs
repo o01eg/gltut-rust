@@ -1,10 +1,10 @@
 #![doc = "Common stuff for OpenGL."]
 
 use std;
-use std::path::Path;
-use std::ffi::{OsStr, CString, CStr};
+use std::ffi::{CStr, CString, OsStr};
 use std::fs::File;
 use std::io::{Read, Result};
+use std::path::Path;
 
 use byteorder::{ByteOrder, LittleEndian};
 
@@ -69,7 +69,7 @@ pub fn load_program(vertex_file_path: &str, fragment_file_path: &str) -> GLuint 
         );
         println!(
             "Program link log: {}",
-            String::from_utf8_lossy(std::mem::transmute::<&[i8], &[u8]>(&buf[..]))
+            String::from_utf8_lossy(&*(&buf[..] as *const _ as * const [u8] ))
         );
 
         gl::DeleteShader(vertex_shader_id);
@@ -83,7 +83,7 @@ fn compile_and_check_shader(shader_id: GLuint, shader_source: &CStr) {
     let mut result = 0;
     let mut info_log_length = 0;
     unsafe {
-        let source: &[i8] = std::mem::transmute::<&[u8], &[i8]>(shader_source.to_bytes_with_nul());
+        let source: &[i8] = &*(shader_source.to_bytes_with_nul() as *const _ as *const [i8]);
         // Compile Shader
         gl::ShaderSource(
             shader_id,
@@ -106,7 +106,7 @@ fn compile_and_check_shader(shader_id: GLuint, shader_source: &CStr) {
         );
         println!(
             "Shader compile log: {}",
-            String::from_utf8_lossy(std::mem::transmute::<&[i8], &[u8]>(&buf[..]))
+            String::from_utf8_lossy(&*(&buf[..] as *const _ as * const [u8]))
         );
     }
 }
@@ -149,7 +149,6 @@ pub fn load_bmp_texture(file: &str) -> GLuint {
 
 #[doc = "Load DDS texture from file path"]
 pub fn load_dds_texture(vs: &sdl2::VideoSubsystem, file: &str) -> Result<GLuint> {
-
     if !vs.gl_extension_supported("GL_EXT_texture_compression_s3tc") {
         panic!("S3TC not supported.");
     }
@@ -183,11 +182,7 @@ pub fn load_dds_texture(vs: &sdl2::VideoSubsystem, file: &str) -> Result<GLuint>
 
     println!(
         "h {} w {} ls {} mmc {} fcc {}",
-        height,
-        width,
-        linear_size,
-        mip_map_count,
-        four_cc
+        height, width, linear_size, mip_map_count, four_cc
     );
 
     let bufsize: usize = if mip_map_count > 1 {
@@ -220,7 +215,6 @@ pub fn load_dds_texture(vs: &sdl2::VideoSubsystem, file: &str) -> Result<GLuint>
         let mut offset = 0;
         let mut level = 0i32;
         while level < mip_map_count && (width > 0 || height > 0) {
-
             let size = (((width + 3) / 4) * ((height + 3) / 4) * block_size) as usize;
 
             gl::CompressedTexImage2D(
@@ -231,7 +225,7 @@ pub fn load_dds_texture(vs: &sdl2::VideoSubsystem, file: &str) -> Result<GLuint>
                 height,
                 0,
                 size as i32,
-                std::mem::transmute((&buffer[offset..]).as_ptr()),
+                (&buffer[offset..]).as_ptr() as *const GLvoid,
             );
 
             offset += size;

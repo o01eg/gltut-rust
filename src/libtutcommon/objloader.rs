@@ -1,16 +1,15 @@
-
 #![doc = "Module for loading OBJ files."]
 
-use std::path::Path;
 use std::fs::File;
 use std::io::{BufReader, Result};
+use std::path::Path;
 use std::str::FromStr;
 
 use matrix::Vector3f;
 
 #[doc = "2D vector for UV data."]
 #[derive(Clone, Debug)]
-#[repr(C, packed)]
+#[repr(C)]
 pub struct Vector2f(f32, f32);
 
 #[doc = "Load obj file."]
@@ -54,13 +53,11 @@ pub fn obj_load<P: AsRef<Path>>(
                         }
                         "vt" => {
                             let uv = Vector2f(
-                                FromStr::from_str(split.next().expect("vertex u")).expect(
-                                    "vertex u",
-                                ),
-                                (if invert_v { -1f32 } else { 1f32 }) *
-                                    f32::from_str(split.next().expect("vertex v")).expect(
-                                        "vertex v",
-                                    ),
+                                FromStr::from_str(split.next().expect("vertex u"))
+                                    .expect("vertex u"),
+                                (if invert_v { -1f32 } else { 1f32 })
+                                    * f32::from_str(split.next().expect("vertex v"))
+                                        .expect("vertex v"),
                             );
                             println!("[OBJ]UV: {:?}", &uv);
                             temp_uvs.push(uv);
@@ -95,17 +92,13 @@ pub fn obj_load<P: AsRef<Path>>(
                                 ).expect("face n");
                                 println!(
                                     "[OBJ] Face {}: v{} u{} n{}",
-                                    i,
-                                    vertex_index[i],
-                                    uv_index[i],
-                                    normal_index[i]
+                                    i, vertex_index[i], uv_index[i], normal_index[i]
                                 );
                             }
 
                             vertex_indices.extend_from_slice(&vertex_index);
                             uv_indices.extend_from_slice(&uv_index);
                             normal_indices.extend_from_slice(&normal_index);
-
                         }
                         _ => {}
                     }

@@ -1,4 +1,3 @@
-
 #![doc = "Common stuff for SDL2."]
 
 use sdl2;
@@ -7,7 +6,7 @@ use std;
 
 use gl;
 
-use gl::types::{GLenum, GLuint, GLsizei, GLchar, GLvoid};
+use gl::types::{GLchar, GLenum, GLsizei, GLuint, GLvoid};
 use std::ffi::CStr;
 
 #[doc = "Context of SDL2."]
@@ -58,9 +57,9 @@ impl SdlContext {
         sdl_vs_context.gl_attr().set_context_version(3, 3); // OpenGL 3.3
         sdl_vs_context.gl_attr().set_context_flags().debug().set();
         // Don't use old OpenGL
-        sdl_vs_context.gl_attr().set_context_profile(
-            sdl2::video::GLProfile::Core,
-        );
+        sdl_vs_context
+            .gl_attr()
+            .set_context_profile(sdl2::video::GLProfile::Core);
 
         let window = sdl_vs_context
             .window(window_name, 1024, 768)
@@ -71,9 +70,7 @@ impl SdlContext {
 
         let _gl_context = window.gl_create_context().unwrap();
 
-        gl::load_with(|s| unsafe {
-            std::mem::transmute(sdl_vs_context.gl_get_proc_address(s))
-        });
+        gl::load_with(|s| sdl_vs_context.gl_get_proc_address(s) as *const GLvoid );
 
         if sdl_vs_context.gl_extension_supported("ARB_debug_support") {
             unsafe {
@@ -96,9 +93,9 @@ impl SdlContext {
             sdl: sdl_context,
             vs: sdl_vs_context,
             ts: sdl_ts_context,
-            window: window,
-            _gl_context: _gl_context,
-            event_pump: event_pump,
+            window,
+            _gl_context,
+            event_pump,
         }
     }
 }

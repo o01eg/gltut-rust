@@ -124,97 +124,34 @@ static G_VERTEX_BUFFER_DATA: [GLfloat; 12 * 3 * 3] = [
 
 // Two UV coordinatesfor each vertex.
 // They were created with Blender. You'll learn shortly how to do this yourself.
+#[allow(excessive_precision)]
 static G_UV_BUFFER_DATA: [GLfloat; 12 * 3 * 2] = [
-    0.000059,
-    0.000004,
-    0.000103,
-    0.336048,
-    0.335973,
-    0.335903,
-    1.000023,
-    0.000013,
-    0.667979,
-    0.335851,
-    0.999958,
-    0.336064,
-    0.667979,
-    0.335851,
-    0.336024,
-    0.671877,
-    0.667969,
-    0.671889,
-    1.000023,
-    0.000013,
-    0.668104,
-    0.000013,
-    0.667979,
-    0.335851,
-    0.000059,
-    0.000004,
-    0.335973,
-    0.335903,
-    0.336098,
-    0.000071,
-    0.667979,
-    0.335851,
-    0.335973,
-    0.335903,
-    0.336024,
-    0.671877,
-    1.000004,
-    0.671847,
-    0.999958,
-    0.336064,
-    0.667979,
-    0.335851,
-    0.668104,
-    0.000013,
-    0.335973,
-    0.335903,
-    0.667979,
-    0.335851,
-    0.335973,
-    0.335903,
-    0.668104,
-    0.000013,
-    0.336098,
-    0.000071,
-    0.000103,
-    0.336048,
-    0.000004,
-    0.671870,
-    0.336024,
-    0.671877,
-    0.000103,
-    0.336048,
-    0.336024,
-    0.671877,
-    0.335973,
-    0.335903,
-    0.667969,
-    0.671889,
-    1.000004,
-    0.671847,
-    0.667979,
-    0.335851,
+    0.000_059, 0.000_004, 0.000_103, 0.336_048, 0.335_973, 0.335_903, 1.000_023, 0.000_013,
+    0.667_979, 0.335_851, 0.999_958, 0.336_064, 0.667_979, 0.335_851, 0.336_024, 0.671_877,
+    0.667_969, 0.671_889, 1.000_023, 0.000_013, 0.668_104, 0.000_013, 0.667_979, 0.335_851,
+    0.000_059, 0.000_004, 0.335_973, 0.335_903, 0.336_098, 0.000_071, 0.667_979, 0.335_851,
+    0.335_973, 0.335_903, 0.336_024, 0.671_877, 1.000_004, 0.671_847, 0.999_958, 0.336_064,
+    0.667_979, 0.335_851, 0.668_104, 0.000_013, 0.335_973, 0.335_903, 0.667_979, 0.335_851,
+    0.335_973, 0.335_903, 0.668_104, 0.000_013, 0.336_098, 0.000_071, 0.000_103, 0.336_048,
+    0.000_004, 0.671_870, 0.336_024, 0.671_877, 0.000_103, 0.336_048, 0.336_024, 0.671_877,
+    0.335_973, 0.335_903, 0.667_969, 0.671_889, 1.000_004, 0.671_847, 0.667_979, 0.335_851,
 ];
 
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
 pub struct GLScene {
-    vertex_array_id: GLuint, //VAO id.
-    vertex_buffer_id: GLuint, //VBO id.
-    uv_buffer_id: GLuint, // UV id.
-    program_id: GLuint, //Shader program id.
-    texture_id: GLuint, // Texture id.
-    matrix_uniform_id: GLint, // MVP uniform locaion.
+    vertex_array_id: GLuint,   //VAO id.
+    vertex_buffer_id: GLuint,  //VBO id.
+    uv_buffer_id: GLuint,      // UV id.
+    program_id: GLuint,        //Shader program id.
+    texture_id: GLuint,        // Texture id.
+    matrix_uniform_id: GLint,  // MVP uniform locaion.
     texture_uniform_id: GLint, // myTextureSampler uniform location.
-    mvp: Matrix4f, // Matrix
+    mvp: Matrix4f,             // Matrix
 }
 
 impl GLScene {
     #[doc = "Create scene and init it."]
-    pub fn new(vs: sdl2::VideoSubsystem) -> GLScene {
-
+    pub fn new(vs: &sdl2::VideoSubsystem) -> GLScene {
         let mut vertex_array_id = 0;
 
         unsafe {
@@ -289,14 +226,14 @@ impl GLScene {
         let texture_id = glutils::load_dds_texture(&vs, "data/tut05/uvtemplate.DDS").unwrap();
 
         GLScene {
-            vertex_array_id: vertex_array_id,
-            vertex_buffer_id: vertex_buffer_id,
-            uv_buffer_id: uv_buffer_id,
-            texture_id: texture_id,
-            program_id: program_id,
-            matrix_uniform_id: matrix_uniform_id,
-            texture_uniform_id: texture_uniform_id,
-            mvp: mvp,
+            vertex_array_id,
+            vertex_buffer_id,
+            uv_buffer_id,
+            texture_id,
+            program_id,
+            matrix_uniform_id,
+            texture_uniform_id,
+            mvp,
         }
     }
 
@@ -325,10 +262,10 @@ impl GLScene {
                 // attribute 0. No particular reason for 0, but must match the layout in the
                 // shader.
                 0,
-                3, // size
-                gl::FLOAT, // type
-                gl::FALSE, // normalized?
-                0, // stride
+                3,                // size
+                gl::FLOAT,        // type
+                gl::FALSE,        // normalized?
+                0,                // stride
                 std::ptr::null(), // array buffer offset
             );
 
@@ -336,11 +273,11 @@ impl GLScene {
             gl::EnableVertexAttribArray(1);
             gl::BindBuffer(gl::ARRAY_BUFFER, self.uv_buffer_id);
             gl::VertexAttribPointer(
-                1, // attribute 1.
-                2, // size
-                gl::FLOAT, // type
-                gl::FALSE, // normalized?
-                0, // stride
+                1,                // attribute 1.
+                2,                // size
+                gl::FLOAT,        // type
+                gl::FALSE,        // normalized?
+                0,                // stride
                 std::ptr::null(), // array buffer offset
             );
 

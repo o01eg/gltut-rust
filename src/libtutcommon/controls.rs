@@ -1,11 +1,10 @@
-
 #![doc = "Common stuff for controls."]
 
-use matrix::{Vector3f, Matrix4f};
+use matrix::{Matrix4f, Vector3f};
 
 use sdl2;
-use sdl2::mouse::MouseWheelDirection;
 use sdl2::keyboard::Scancode;
+use sdl2::mouse::MouseWheelDirection;
 
 use std::f32::consts::FRAC_PI_2;
 
@@ -41,7 +40,7 @@ impl Controls {
             // sdl2::TimerSubsystem::ticks() is called only once,
             // the first time this function is called
             last_time: ts.ticks(),
-            ts: ts,
+            ts,
             projection: Matrix4f::perspective(45.0, 4.0 / 3.0, 0.1, 100.0),
             view: Matrix4f::look_at(
                 &Vector3f(4.0, 3.0, 3.0), // Camera is at (4,3,3), in World Space
@@ -59,7 +58,6 @@ impl Controls {
 
     #[doc = "update controls data."]
     pub fn update(&mut self, e: &sdl2::EventPump) {
-
         // Compute time difference between current and last frame
         let current_time = self.ts.ticks();
         let delta_time = current_time - self.last_time;
@@ -120,7 +118,7 @@ impl Controls {
         self.projection = Matrix4f::perspective(self.initial_fov, 4. / 3., 0.1, 100.);
 
         self.view = Matrix4f::look_at(
-            &self.position, // Camera is here
+            &self.position,           // Camera is here
             &Vector3f(0.0, 0.0, 0.0), // Object center
             &up,
         ); // Head is up (set to 0,-1,0 to look upside-down)

@@ -2,9 +2,7 @@
 #![deny(missing_docs)]
 #![deny(non_snake_case)]
 #![deny(non_upper_case_globals)]
-
 #![crate_name = "tut04"]
-
 #![doc = "http://www.opengl-tutorial.org/beginners-tutorials/tutorial-4-a-colored-cube/"]
 
 // Include SDL2 library.

@@ -11,15 +11,14 @@ static G_VERTEX_BUFFER_DATA: [GLfloat; 9] = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 0.
 #[doc = "Moved out drawing GL stuff to avoid mess with the other code."]
 #[derive(Default)]
 pub struct GLScene {
-    vertex_array_id: GLuint, //VAO id.
+    vertex_array_id: GLuint,  //VAO id.
     vertex_buffer_id: GLuint, //VBO id.
-    program_id: GLuint, //Shader program id.
+    program_id: GLuint,       //Shader program id.
 }
 
 impl GLScene {
     #[doc = "Create scene and init it."]
     pub fn new() -> GLScene {
-
         let mut vertex_array_id = 0;
 
         unsafe {
@@ -53,15 +52,14 @@ impl GLScene {
         }
 
         GLScene {
-            vertex_array_id: vertex_array_id,
-            vertex_buffer_id: vertex_buffer_id,
-            program_id: program_id,
+            vertex_array_id,
+            vertex_buffer_id,
+            program_id,
         }
     }
 
     #[doc = "Render scene each frame."]
     pub fn draw(&self) {
-
         unsafe {
             //1st attribute buffer : vertices
             gl::EnableVertexAttribArray(0);
@@ -70,10 +68,10 @@ impl GLScene {
                 // attribute 0. No particular reason for 0, but must match the layout in the
                 // shader.
                 0,
-                3, // size
-                gl::FLOAT, // type
-                gl::FALSE, // normalized?
-                0, // stride
+                3,                // size
+                gl::FLOAT,        // type
+                gl::FALSE,        // normalized?
+                0,                // stride
                 std::ptr::null(), // array buffer offset
             );
 

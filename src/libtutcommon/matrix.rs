@@ -1,10 +1,9 @@
-
 #![doc = "Linear algebra"]
 
-use std::ops::{Add, Sub, Mul};
+use std::ops::{Add, Mul, Sub};
 
 #[doc = "Vector with 3 components (x,y,z)"]
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Clone, Debug)]
 pub struct Vector3f(pub f32, pub f32, pub f32);
 
@@ -49,7 +48,6 @@ impl<'a> Mul<f32> for &'a Vector3f {
         Vector3f(self.0 * _rhs, self.1 * _rhs, self.2 * _rhs)
     }
 }
-
 
 #[doc = "Matrix 4x4 to send into OpenGL."]
 #[derive(Debug)]
@@ -101,18 +99,18 @@ impl Matrix4f {
         let s = f.cross(&up1).normalize();
         let u = s.cross(&f);
 
-        let mut m: Matrix4f = Default::default();
-        m.data[0][0] = s.0;
-        m.data[1][0] = s.1;
-        m.data[2][0] = s.2;
+        let mut res: Matrix4f = Default::default();
+        res.data[0][0] = s.0;
+        res.data[1][0] = s.1;
+        res.data[2][0] = s.2;
 
-        m.data[0][1] = u.0;
-        m.data[1][1] = u.1;
-        m.data[2][1] = u.2;
+        res.data[0][1] = u.0;
+        res.data[1][1] = u.1;
+        res.data[2][1] = u.2;
 
-        m.data[0][2] = -f.0;
-        m.data[1][2] = -f.1;
-        m.data[2][2] = -f.2;
+        res.data[0][2] = -f.0;
+        res.data[1][2] = -f.1;
+        res.data[2][2] = -f.2;
 
         let mut t: Matrix4f = Default::default();
 
@@ -120,11 +118,11 @@ impl Matrix4f {
         t.data[3][1] = -eye.1;
         t.data[3][2] = -eye.2;
 
-        m.mul(&t)
+        res.mul(&t)
     }
 
     #[doc = "Generate translation matrix."]
-    pub fn translate(t: Vector3f) -> Matrix4f {
+    pub fn translate(t: &Vector3f) -> Matrix4f {
         let mut res: Matrix4f = Default::default();
 
         res.data[3][0] = t.0;
@@ -135,7 +133,7 @@ impl Matrix4f {
     }
 
     #[doc = "Generate translation matrix."]
-    pub fn scale(s: Vector3f) -> Matrix4f {
+    pub fn scale(s: &Vector3f) -> Matrix4f {
         let mut res: Matrix4f = Default::default();
 
         res.data[0][0] = s.0;
@@ -146,7 +144,7 @@ impl Matrix4f {
     }
 
     #[doc = "Generate rotate matrix."]
-    pub fn rotate(angle: f32, axis: Vector3f) -> Matrix4f {
+    pub fn rotate(angle: f32, axis: &Vector3f) -> Matrix4f {
         let mut res: Matrix4f = Default::default();
 
         let a = (angle / 2.0).to_radians().sin();
