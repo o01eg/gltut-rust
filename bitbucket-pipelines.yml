@@ -12,7 +12,7 @@ pipelines:
           - crates
         script:
           - apt-get update
-          - apt-get install -y libsdl2-dev
+          - apt-get install --no-install-recommends -y libsdl2-dev
           - rustc --verbose --version
           - cargo update -v
           - cargo build -v
@@ -24,13 +24,14 @@ pipelines:
           - crates
         script:
           - apt-get update
-          - apt-get install -y libsdl2-dev
+          - apt-get install --no-install-recommends -y libsdl2-dev
           - rustup component add rustfmt-preview --toolchain nightly
           - rustc --verbose --version
           - cargo update -v
           - cargo build -v
           - cargo test -v
-          - cargo clippy -v
+          - cargo +nightly install clippy -v
+          - cargo clippy --all -v
           - cargo fmt -- --version
           - cargo fmt --all -- --check
 definitions:
